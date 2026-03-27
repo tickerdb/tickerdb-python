@@ -422,6 +422,76 @@ class AsyncTickerAPI:
         )
 
     # ------------------------------------------------------------------
+    # Webhook management
+    # ------------------------------------------------------------------
+
+    async def list_webhooks(self) -> Dict[str, Any]:
+        """List all webhooks for the current account.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return await self._request("GET", "/webhooks")
+
+    async def create_webhook(
+        self,
+        url: str,
+        events: Optional[Dict[str, bool]] = None,
+    ) -> Dict[str, Any]:
+        """Create a new webhook.
+
+        Args:
+            url: The URL to receive webhook events.
+            events: Dict mapping event names to enabled booleans.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        body: Dict[str, Any] = {"url": url}
+        if events is not None:
+            body["events"] = events
+        return await self._request("POST", "/webhooks", json=body)
+
+    async def update_webhook(
+        self,
+        id: str,
+        *,
+        url: Optional[str] = None,
+        events: Optional[Dict[str, bool]] = None,
+        active: Optional[bool] = None,
+    ) -> Dict[str, Any]:
+        """Update an existing webhook.
+
+        Args:
+            id: The webhook ID.
+            url: New URL for the webhook.
+            events: Updated event subscriptions.
+            active: Whether the webhook is active.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        body: Dict[str, Any] = {"id": id}
+        if url is not None:
+            body["url"] = url
+        if events is not None:
+            body["events"] = events
+        if active is not None:
+            body["active"] = active
+        return await self._request("PUT", "/webhooks", json=body)
+
+    async def delete_webhook(self, id: str) -> Dict[str, Any]:
+        """Delete a webhook.
+
+        Args:
+            id: The webhook ID to delete.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return await self._request("DELETE", "/webhooks", json={"id": id})
+
+    # ------------------------------------------------------------------
     # Context manager support
     # ------------------------------------------------------------------
 

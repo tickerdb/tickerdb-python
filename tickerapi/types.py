@@ -15,6 +15,7 @@ else:
 
 Timeframe = Literal["daily", "weekly"]
 AssetClass = Literal["stock", "crypto", "etf", "all"]
+WebhookEvents = Dict[str, bool]
 
 # ---------------------------------------------------------------------------
 # Rate limit information returned with every response
