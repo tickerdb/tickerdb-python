@@ -220,6 +220,28 @@ class AsyncTickerAPI:
             body["timeframe"] = timeframe
         return await self._request("POST", "/watchlist", json=body)
 
+    async def watchlist_changes(
+        self,
+        *,
+        timeframe: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get field-level state changes for your saved watchlist tickers.
+
+        Returns structured diffs showing what changed since the last pipeline
+        run (day-over-day for daily, week-over-week for weekly). Available on
+        all tiers.
+
+        Args:
+            timeframe: ``"daily"`` or ``"weekly"``.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        params: Dict[str, str] = {}
+        if timeframe is not None:
+            params["timeframe"] = timeframe
+        return await self._request("GET", "/watchlist/changes", params=params)
+
     async def assets(self) -> Dict[str, Any]:
         """List all available assets.
 

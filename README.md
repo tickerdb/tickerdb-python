@@ -79,6 +79,15 @@ result = client.watchlist(["AAPL", "MSFT", "TSLA"])
 result = client.watchlist(["AAPL", "MSFT"], timeframe="weekly")
 ```
 
+### Watchlist Changes
+
+Get field-level state changes for your saved watchlist tickers since the last pipeline run.
+
+```python
+result = client.watchlist_changes()
+result = client.watchlist_changes(timeframe="weekly")
+```
+
 ### Assets
 
 List all available assets.
