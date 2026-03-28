@@ -71,7 +71,7 @@ class UnusualVolumeParams(TypedDict, total=False):
     asset_class: AssetClass
     sector: str
     min_ratio_band: Literal[
-        "extremely_low", "low", "normal", "elevated", "high", "extremely_high"
+        "extremely_low", "low", "normal", "above_average", "high", "extremely_high"
     ]
     sort_by: Literal["volume_percentile"]
     limit: int
@@ -84,7 +84,7 @@ class ValuationParams(TypedDict, total=False):
     timeframe: Timeframe
     sector: str
     direction: Literal["undervalued", "overvalued", "all"]
-    min_severity: Literal["deep_value", "extreme_premium"]
+    min_severity: Literal["deep_value", "deeply_overvalued"]
     sort_by: Literal["valuation_percentile", "pe_vs_history"]
     limit: int
     date: str

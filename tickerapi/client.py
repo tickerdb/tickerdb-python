@@ -344,7 +344,7 @@ class TickerAPI:
             asset_class: ``"stock"``, ``"crypto"``, ``"etf"``, or ``"all"``.
             sector: Filter by sector.
             min_ratio_band: ``"extremely_low"``, ``"low"``, ``"normal"``,
-                ``"elevated"``, ``"high"``, or ``"extremely_high"``.
+                ``"above_average"``, ``"high"``, or ``"extremely_high"``.
             sort_by: ``"volume_percentile"``.
             limit: Max results (1-50).
             date: ISO 8601 date string.
@@ -383,7 +383,7 @@ class TickerAPI:
             timeframe: ``"daily"`` or ``"weekly"``.
             sector: Filter by sector.
             direction: ``"undervalued"``, ``"overvalued"``, or ``"all"``.
-            min_severity: ``"deep_value"`` or ``"extreme_premium"``.
+            min_severity: ``"deep_value"`` or ``"deeply_overvalued"``.
             sort_by: ``"valuation_percentile"`` or ``"pe_vs_history"``.
             limit: Max results (1-50).
             date: ISO 8601 date string.
