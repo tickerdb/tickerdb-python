@@ -250,6 +250,16 @@ class AsyncTickerAPI:
         """
         return await self._request("GET", "/assets")
 
+    async def sectors(self) -> Dict[str, Any]:
+        """List all valid sector values with asset counts.
+
+        Use these values with the ``sector`` parameter on scan endpoints.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return await self._request("GET", "/list/sectors")
+
     async def scan_oversold(
         self,
         *,

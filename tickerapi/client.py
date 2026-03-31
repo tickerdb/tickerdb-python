@@ -248,6 +248,16 @@ class TickerAPI:
         """
         return self._request("GET", "/assets")
 
+    def sectors(self) -> Dict[str, Any]:
+        """List all valid sector values with asset counts.
+
+        Use these values with the ``sector`` parameter on scan endpoints.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return self._request("GET", "/list/sectors")
+
     def scan_oversold(
         self,
         *,
