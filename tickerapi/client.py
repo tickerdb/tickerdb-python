@@ -258,6 +258,45 @@ class TickerAPI:
         """
         return self._request("GET", "/list/sectors")
 
+    def events(
+        self,
+        *,
+        ticker: str,
+        field: str,
+        timeframe: Optional[str] = None,
+        band: Optional[str] = None,
+        limit: Optional[int] = None,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Search for historical band transition events for a ticker.
+
+        Args:
+            ticker: Asset ticker symbol (e.g. "AAPL").
+            field: Band field name (e.g. "rsi_zone", "trend_direction").
+            timeframe: "daily" or "weekly". Defaults to "daily".
+            band: Filter to a specific band value (e.g. "deep_oversold").
+            limit: Max results (1-100, default 10).
+            before: Return events before this date (YYYY-MM-DD).
+            after: Return events after this date (YYYY-MM-DD).
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return self._request(
+            "GET",
+            "/events",
+            params={
+                "ticker": ticker,
+                "field": field,
+                "timeframe": timeframe,
+                "band": band,
+                "limit": limit,
+                "before": before,
+                "after": after,
+            },
+        )
+
     def scan_oversold(
         self,
         *,
