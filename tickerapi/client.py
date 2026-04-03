@@ -268,6 +268,9 @@ class TickerAPI:
         limit: Optional[int] = None,
         before: Optional[str] = None,
         after: Optional[str] = None,
+        context_ticker: Optional[str] = None,
+        context_field: Optional[str] = None,
+        context_band: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Search for historical band transition events for a ticker.
 
@@ -279,6 +282,13 @@ class TickerAPI:
             limit: Max results (1-100, default 10).
             before: Return events before this date (YYYY-MM-DD).
             after: Return events after this date (YYYY-MM-DD).
+            context_ticker: Cross-asset correlation: a second ticker to
+                filter against (e.g. "SPY"). Requires context_field and
+                context_band. Plus/Pro only. Costs 2 credits.
+            context_field: Band field to check on the context ticker
+                (e.g. "trend_direction").
+            context_band: Only return events where the context ticker was
+                in this band on the event date (e.g. "downtrend").
 
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
@@ -294,6 +304,9 @@ class TickerAPI:
                 "limit": limit,
                 "before": before,
                 "after": after,
+                "context_ticker": context_ticker,
+                "context_field": context_field,
+                "context_band": context_band,
             },
         )
 
