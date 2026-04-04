@@ -142,6 +142,32 @@ Track notable insider trading activity.
 result = client.scan_insider_activity(direction="buying", sort_by="net_ratio", limit=15)
 ```
 
+### Band Stability Metadata
+
+Every band field (trend direction, momentum zone, etc.) now includes a sibling `_meta` object with stability context. This tells you how long a state has been held, how often it has flipped recently, and an overall stability label.
+
+```python
+result = client.summary("AAPL")
+data = result["data"]
+
+# The band value itself
+print(data["trend"]["direction"])          # "uptrend"
+
+# Stability metadata for that band
+print(data["trend"]["direction_meta"])
+# {"stability": "established", "periods_in_current_state": 18, "flips_recent": 1, "flips_lookback": 20}
+
+# Type hints available
+from tickerapi import Stability, BandMeta
+```
+
+`Stability` is one of `"fresh"`, `"holding"`, `"established"`, or `"volatile"`. `BandMeta` contains the full metadata dict. Stability metadata is available on Plus and Pro tiers only.
+
+Stability context also appears in related endpoints:
+
+- **Watchlist Changes** include stability fields for each changed band.
+- **Scanners** return `*_stability` and `*_flips_recent` columns for relevant bands.
+
 ## Error Handling
 
 The SDK raises typed exceptions for all API errors:

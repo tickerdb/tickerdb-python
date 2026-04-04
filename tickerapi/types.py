@@ -15,6 +15,7 @@ else:
 
 Timeframe = Literal["daily", "weekly"]
 AssetClass = Literal["stock", "crypto", "etf", "all"]
+Stability = Literal["fresh", "holding", "established", "volatile"]
 WebhookEvents = Dict[str, bool]
 
 # ---------------------------------------------------------------------------
@@ -33,6 +34,79 @@ class RateLimits(TypedDict, total=False):
     hourly_requests_used: Optional[int]
     hourly_requests_remaining: Optional[int]
     hourly_request_reset: Optional[str]
+
+
+# ---------------------------------------------------------------------------
+# Stability metadata (attached to band fields in summary/watchlist responses)
+# ---------------------------------------------------------------------------
+
+
+class BandMeta(TypedDict, total=False):
+    """Stability metadata for a band field (Plus/Pro tiers).
+
+    Appears as a sibling key with ``_meta`` suffix next to each band value
+    in summary, compare, and watchlist responses (e.g. ``rsi_zone_meta``).
+    """
+
+    timeframe: Timeframe
+    periods_in_current_state: int
+    flips_recent: int
+    flips_lookback: str
+    stability: Stability
+
+
+# ---------------------------------------------------------------------------
+# Events response types
+# ---------------------------------------------------------------------------
+
+
+class Event(TypedDict, total=False):
+    """A single band transition event returned by the events endpoint."""
+
+    date: str
+    band: str
+    prev_band: str
+    stability_at_entry: Optional[Stability]
+    flips_recent_at_entry: Optional[int]
+    flips_lookback: Optional[str]
+    duration_days: Optional[int]
+    duration_weeks: Optional[int]
+    aftermath: Optional[Dict[str, Any]]
+
+
+class EventsContext(TypedDict):
+    """Cross-asset correlation context in events responses."""
+
+    ticker: str
+    field: str
+    band: str
+
+
+class EventsResponse(TypedDict, total=False):
+    """Full response envelope from the events endpoint."""
+
+    ticker: str
+    field: str
+    timeframe: str
+    events: List[Event]
+    total_occurrences: int
+    query_range: str
+    context: Optional[EventsContext]
+
+
+class EventsParams(TypedDict, total=False):
+    """Parameters for the events endpoint."""
+
+    ticker: str
+    field: str
+    timeframe: Timeframe
+    band: str
+    limit: int
+    before: str
+    after: str
+    context_ticker: str
+    context_field: str
+    context_band: str
 
 
 # ---------------------------------------------------------------------------
