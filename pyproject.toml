@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tickerapi"
-version = "1.7.1"
+version = "1.7.2"
 description = "Python SDK for the TickerAPI financial data API"
 readme = "README.md"
 license = "MIT"
@@ -35,5 +35,5 @@ dependencies = [
 [project.urls]
 Homepage = "https://tickerapi.ai"
 Documentation = "https://tickerapi.ai/docs"
-Repository = "https://github.com/tickerapi/tickerapi-python"
-Issues = "https://github.com/tickerapi/tickerapi-python/issues"
+Repository = "https://github.com/TickerAPI/tickerapi-sdk-python"
+Issues = "https://github.com/TickerAPI/tickerapi-sdk-python/issues"
