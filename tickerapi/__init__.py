@@ -32,6 +32,9 @@ from .types import (
     EventsContext,
     EventsParams,
     EventsResponse,
+    HistoryParams,
+    HistoryResponse,
+    HistoryRow,
     RateLimits,
     Stability,
 )
@@ -51,6 +54,9 @@ __all__ = [
     "EventsContext",
     "EventsParams",
     "EventsResponse",
+    "HistoryParams",
+    "HistoryResponse",
+    "HistoryRow",
     "RateLimits",
     "Stability",
 ]

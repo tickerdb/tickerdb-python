@@ -200,6 +200,21 @@ class AsyncTickerAPI:
             params={"tickers": tickers, "timeframe": timeframe, "date": date},
         )
 
+    async def history(
+        self,
+        ticker: str,
+        *,
+        start: str,
+        end: str,
+        timeframe: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        """Get a historical series for a single ticker across a date range."""
+        return await self._request(
+            "GET",
+            f"/history/{ticker}",
+            params={"timeframe": timeframe, "start": start, "end": end},
+        )
+
     async def watchlist(
         self,
         tickers: List[str],

@@ -61,6 +61,15 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
+### History
+
+Get a historical series for one ticker across a date range.
+
+```python
+result = client.history("AAPL", start="2025-01-01", end="2025-03-31")
+result = client.history("AAPL", timeframe="weekly", start="2024-01-01", end="2025-03-31")
+```
+
 ### Compare
 
 Compare multiple tickers side-by-side.

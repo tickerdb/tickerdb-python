@@ -185,3 +185,26 @@ class APIResponse(TypedDict):
 
     data: Any
     rate_limits: RateLimits
+
+
+class HistoryRow(TypedDict, total=False):
+    date: str
+    schema_version: str
+    summary: Dict[str, Any]
+    levels: Optional[Dict[str, Any]]
+
+
+class HistoryResponse(TypedDict, total=False):
+    ticker: str
+    timeframe: Timeframe
+    start: str
+    end: str
+    row_count: int
+    rows: List[HistoryRow]
+
+
+class HistoryParams(TypedDict):
+    ticker: str
+    start: str
+    end: str
+    timeframe: Timeframe
