@@ -1,29 +1,29 @@
-"""TickerAPI Python SDK - Financial data at your fingertips.
+"""TickerDB Python SDK - Financial data at your fingertips.
 
 Usage::
 
-    from tickerapi import TickerAPI
+    from tickerdb import TickerDB
 
-    client = TickerAPI("your_api_key")
+    client = TickerDB("your_api_key")
     result = client.summary("AAPL")
 
 For async usage::
 
-    from tickerapi import AsyncTickerAPI
+    from tickerdb import AsyncTickerDB
 
-    async with AsyncTickerAPI("your_api_key") as client:
+    async with AsyncTickerDB("your_api_key") as client:
         result = await client.summary("AAPL")
 """
 
-from .async_client import AsyncTickerAPI
-from .client import TickerAPI
+from .async_client import AsyncTickerDB
+from .client import TickerDB
 from .exceptions import (
     AuthenticationError,
     DataUnavailableError,
     ForbiddenError,
     NotFoundError,
     RateLimitError,
-    TickerAPIError,
+    TickerDBError,
 )
 from .types import (
     APIResponse,
@@ -40,9 +40,9 @@ from .types import (
 )
 
 __all__ = [
-    "TickerAPI",
-    "AsyncTickerAPI",
-    "TickerAPIError",
+    "TickerDB",
+    "AsyncTickerDB",
+    "TickerDBError",
     "AuthenticationError",
     "ForbiddenError",
     "NotFoundError",

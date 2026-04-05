@@ -1,4 +1,4 @@
-"""TypedDict definitions for TickerAPI SDK parameters and responses."""
+"""TypedDict definitions for TickerDB SDK parameters and responses."""
 
 import sys
 from typing import Any, Dict, List, Optional

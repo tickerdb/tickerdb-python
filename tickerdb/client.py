@@ -1,4 +1,4 @@
-"""Synchronous TickerAPI client."""
+"""Synchronous TickerDB client."""
 
 from typing import Any, Dict, List, Optional, Union
 
@@ -10,11 +10,11 @@ from .exceptions import (
     ForbiddenError,
     NotFoundError,
     RateLimitError,
-    TickerAPIError,
+    TickerDBError,
 )
 from .types import RateLimits
 
-_DEFAULT_BASE_URL = "https://api.tickerapi.ai/v1"
+_DEFAULT_BASE_URL = "https://api.tickerdb.com/v1"
 _DEFAULT_TIMEOUT = 30.0
 
 
@@ -43,14 +43,14 @@ def _parse_rate_limits(headers: httpx.Headers) -> RateLimits:
 
 
 def _raise_for_status(response: httpx.Response) -> None:
-    """Raise a typed TickerAPIError if the response indicates an error."""
+    """Raise a typed TickerDBError if the response indicates an error."""
     if response.status_code < 400:
         return
 
     try:
         body = response.json()
     except Exception:
-        raise TickerAPIError(
+        raise TickerDBError(
             status_code=response.status_code,
             error_type="unknown_error",
             message=response.text or "Unknown error",
@@ -77,25 +77,25 @@ def _raise_for_status(response: httpx.Response) -> None:
         404: NotFoundError,
         429: RateLimitError,
         503: DataUnavailableError,
-    }.get(response.status_code, TickerAPIError)
+    }.get(response.status_code, TickerDBError)
 
     raise error_cls(**kwargs)
 
 
-class TickerAPI:
-    """Synchronous client for the TickerAPI financial data API.
+class TickerDB:
+    """Synchronous client for the TickerDB financial data API.
 
     Args:
-        api_key: Your TickerAPI bearer token.
+        api_key: Your TickerDB bearer token.
         base_url: Override the default API base URL.
         timeout: Request timeout in seconds (default 30).
         **httpx_kwargs: Additional keyword arguments forwarded to ``httpx.Client``.
 
     Usage::
 
-        from tickerapi import TickerAPI
+        from tickerdb import TickerDB
 
-        client = TickerAPI("your_api_key")
+        client = TickerDB("your_api_key")
         result = client.summary("AAPL")
         print(result["data"])
         print(result["rate_limits"])
@@ -113,7 +113,7 @@ class TickerAPI:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Accept": "application/json",
-                "User-Agent": "tickerapi-python/0.1.0",
+                "User-Agent": "tickerdb-python/0.1.0",
             },
             timeout=timeout,
             **httpx_kwargs,
@@ -596,7 +596,7 @@ class TickerAPI:
         """Close the underlying HTTP client."""
         self._client.close()
 
-    def __enter__(self) -> "TickerAPI":
+    def __enter__(self) -> "TickerDB":
         return self
 
     def __exit__(self, *args: Any) -> None:

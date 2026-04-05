@@ -1,21 +1,21 @@
-# TickerAPI Python SDK
+# TickerDB Python SDK
 
-[![PyPI version](https://img.shields.io/pypi/v/tickerapi.svg)](https://pypi.org/project/tickerapi/)
-[![Python versions](https://img.shields.io/pypi/pyversions/tickerapi.svg)](https://pypi.org/project/tickerapi/)
+[![PyPI version](https://img.shields.io/pypi/v/tickerdb.svg)](https://pypi.org/project/tickerdb/)
+[![Python versions](https://img.shields.io/pypi/pyversions/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 
-The official Python SDK for [TickerAPI](https://tickerapi.ai) -- financial data and market intelligence API.
+The official Python SDK for [TickerDB](https://tickerdb.com) -- financial data and market intelligence API.
 
 - Sync and async clients
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
 
-**Full API documentation:** [https://tickerapi.ai/docs](https://tickerapi.ai/docs)
+**Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
 ## Installation
 
 ```bash
-pip install tickerapi
+pip install tickerdb
 ```
 
 ## Quick Start
@@ -23,9 +23,9 @@ pip install tickerapi
 ### Synchronous
 
 ```python
-from tickerapi import TickerAPI
+from tickerdb import TickerDB
 
-client = TickerAPI("your_api_key")
+client = TickerDB("your_api_key")
 
 # Get a ticker summary
 result = client.summary("AAPL")
@@ -39,10 +39,10 @@ print(result["rate_limits"]["requests_remaining"])
 
 ```python
 import asyncio
-from tickerapi import AsyncTickerAPI
+from tickerdb import AsyncTickerDB
 
 async def main():
-    async with AsyncTickerAPI("your_api_key") as client:
+    async with AsyncTickerDB("your_api_key") as client:
         result = await client.summary("AAPL")
         print(result["data"])
 
@@ -167,7 +167,7 @@ print(data["trend"]["direction_meta"])
 # {"stability": "established", "periods_in_current_state": 18, "flips_recent": 1, "flips_lookback": 20}
 
 # Type hints available
-from tickerapi import Stability, BandMeta
+from tickerdb import Stability, BandMeta
 ```
 
 `Stability` is one of `"fresh"`, `"holding"`, `"established"`, or `"volatile"`. `BandMeta` contains the full metadata dict. Stability metadata is available on Plus and Pro tiers only.
@@ -182,9 +182,9 @@ Stability context also appears in related endpoints:
 The SDK raises typed exceptions for all API errors:
 
 ```python
-from tickerapi import TickerAPI, TickerAPIError, RateLimitError, NotFoundError
+from tickerdb import TickerDB, TickerDBError, RateLimitError, NotFoundError
 
-client = TickerAPI("your_api_key")
+client = TickerDB("your_api_key")
 
 try:
     result = client.summary("INVALID_TICKER")
@@ -193,7 +193,7 @@ except NotFoundError as e:
 except RateLimitError as e:
     print(f"Rate limited! Resets at: {e.reset}")
     print(f"Upgrade: {e.upgrade_url}")
-except TickerAPIError as e:
+except TickerDBError as e:
     print(f"API error [{e.status_code}]: {e.message}")
 ```
 
@@ -201,7 +201,7 @@ except TickerAPIError as e:
 
 | Exception | Status Code | Description |
 |---|---|---|
-| `TickerAPIError` | any | Base exception for all API errors |
+| `TickerDBError` | any | Base exception for all API errors |
 | `AuthenticationError` | 401 | Invalid or missing API key |
 | `ForbiddenError` | 403 | Endpoint restricted to higher tier |
 | `NotFoundError` | 404 | Asset not found |
@@ -227,6 +227,6 @@ print(limits["hourly_requests_remaining"])  # Hourly remaining
 
 ## Links
 
-- [TickerAPI Website](https://tickerapi.ai)
-- [API Documentation](https://tickerapi.ai/docs)
-- [PyPI Package](https://pypi.org/project/tickerapi/)
+- [TickerDB Website](https://tickerdb.com)
+- [API Documentation](https://tickerdb.com/docs)
+- [PyPI Package](https://pypi.org/project/tickerdb/)

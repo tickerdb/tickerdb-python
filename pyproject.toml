@@ -3,14 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "tickerapi"
+name = "tickerdb"
 version = "1.7.2"
-description = "Python SDK for the TickerAPI financial data API"
+description = "Python SDK for the TickerDB financial data API"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8"
 authors = [
-    { name = "TickerAPI", email = "support@tickerapi.ai" },
+    { name = "TickerDB", email = "support@tickerdb.com" },
 ]
 keywords = ["finance", "stocks", "crypto", "etf", "market-data", "api", "ticker"]
 classifiers = [
@@ -33,7 +33,7 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://tickerapi.ai"
-Documentation = "https://tickerapi.ai/docs"
-Repository = "https://github.com/TickerAPI/tickerapi-sdk-python"
-Issues = "https://github.com/TickerAPI/tickerapi-sdk-python/issues"
+Homepage = "https://tickerdb.com"
+Documentation = "https://tickerdb.com/docs"
+Repository = "https://github.com/TickerDB/tickerdb-sdk-python"
+Issues = "https://github.com/TickerDB/tickerdb-sdk-python/issues"

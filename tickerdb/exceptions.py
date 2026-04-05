@@ -1,10 +1,10 @@
-"""Exceptions for the TickerAPI SDK."""
+"""Exceptions for the TickerDB SDK."""
 
 from typing import Any, Dict, Optional
 
 
-class TickerAPIError(Exception):
-    """Raised when the TickerAPI returns an error response.
+class TickerDBError(Exception):
+    """Raised when the TickerDB returns an error response.
 
     Attributes:
         status_code: HTTP status code of the response.
@@ -33,21 +33,21 @@ class TickerAPIError(Exception):
         super().__init__(f"[{status_code}] {error_type}: {message}")
 
 
-class AuthenticationError(TickerAPIError):
+class AuthenticationError(TickerDBError):
     """Raised on 401 responses (invalid or missing API key)."""
 
 
-class ForbiddenError(TickerAPIError):
+class ForbiddenError(TickerDBError):
     """Raised on 403 responses (tier-restricted endpoint)."""
 
 
-class NotFoundError(TickerAPIError):
+class NotFoundError(TickerDBError):
     """Raised on 404 responses (asset not found)."""
 
 
-class RateLimitError(TickerAPIError):
+class RateLimitError(TickerDBError):
     """Raised on 429 responses (rate limit exceeded)."""
 
 
-class DataUnavailableError(TickerAPIError):
+class DataUnavailableError(TickerDBError):
     """Raised on 503 responses (data temporarily unavailable)."""
