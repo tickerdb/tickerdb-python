@@ -15,8 +15,8 @@ For async usage::
         result = await client.summary("AAPL")
 """
 
-from .async_client import AsyncTickerDB
-from .client import TickerDB
+from .async_client import AsyncSearchQuery, AsyncTickerDB
+from .client import SearchQuery, TickerDB
 from .exceptions import (
     AuthenticationError,
     DataUnavailableError,
@@ -30,18 +30,19 @@ from .types import (
     BandMeta,
     Event,
     EventsContext,
-    EventsParams,
     EventsResponse,
-    HistoryParams,
-    HistoryResponse,
-    HistoryRow,
     RateLimits,
+    SchemaResponse,
+    SearchParams,
+    SearchResponse,
     Stability,
 )
 
 __all__ = [
     "TickerDB",
     "AsyncTickerDB",
+    "SearchQuery",
+    "AsyncSearchQuery",
     "TickerDBError",
     "AuthenticationError",
     "ForbiddenError",
@@ -52,12 +53,11 @@ __all__ = [
     "BandMeta",
     "Event",
     "EventsContext",
-    "EventsParams",
     "EventsResponse",
-    "HistoryParams",
-    "HistoryResponse",
-    "HistoryRow",
     "RateLimits",
+    "SchemaResponse",
+    "SearchParams",
+    "SearchResponse",
     "Stability",
 ]
 

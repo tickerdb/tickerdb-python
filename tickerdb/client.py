@@ -1,6 +1,6 @@
 """Synchronous TickerDB client."""
 
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional
 
 import httpx
 
@@ -82,6 +82,92 @@ def _raise_for_status(response: httpx.Response) -> None:
     raise error_cls(**kwargs)
 
 
+class SearchQuery:
+    """Fluent query builder for the search endpoint.
+
+    Usage::
+
+        results = client.query() \\
+            .eq("momentum_rsi_zone", "oversold") \\
+            .eq("sector", "Technology") \\
+            .select("ticker", "sector", "momentum_rsi_zone") \\
+            .sort("extremes_condition_percentile", "asc") \\
+            .limit(10) \\
+            .execute()
+    """
+
+    def __init__(self, client: "TickerDB") -> None:
+        self._client = client
+        self._filters: list = []
+        self._fields: Optional[List[str]] = None
+        self._sort_by: Optional[str] = None
+        self._sort_direction: Optional[str] = None
+        self._limit: Optional[int] = None
+        self._offset: Optional[int] = None
+        self._timeframe: Optional[str] = None
+
+    def eq(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "eq", "value": value})
+        return self
+
+    def neq(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "neq", "value": value})
+        return self
+
+    def in_(self, field: str, values: list) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "in", "value": values})
+        return self
+
+    def gt(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "gt", "value": value})
+        return self
+
+    def gte(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "gte", "value": value})
+        return self
+
+    def lt(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "lt", "value": value})
+        return self
+
+    def lte(self, field: str, value: Any) -> "SearchQuery":
+        self._filters.append({"field": field, "op": "lte", "value": value})
+        return self
+
+    def select(self, *fields: str) -> "SearchQuery":
+        self._fields = list(fields)
+        return self
+
+    def sort(self, field: str, direction: str = "desc") -> "SearchQuery":
+        self._sort_by = field
+        self._sort_direction = direction
+        return self
+
+    def limit(self, n: int) -> "SearchQuery":
+        self._limit = n
+        return self
+
+    def offset(self, n: int) -> "SearchQuery":
+        self._offset = n
+        return self
+
+    def timeframe(self, tf: str) -> "SearchQuery":
+        self._timeframe = tf
+        return self
+
+    def execute(self) -> Dict[str, Any]:
+        """Execute the built query and return results."""
+        return self._client.search(
+            filters=self._filters,
+            fields=self._fields,
+            sort_by=self._sort_by,
+            sort_direction=self._sort_direction,
+            limit=self._limit,
+            offset=self._offset,
+            timeframe=self._timeframe,
+        )
+
+
 class TickerDB:
     """Synchronous client for the TickerDB financial data API.
 
@@ -156,13 +242,41 @@ class TickerDB:
         *,
         timeframe: Optional[str] = None,
         date: Optional[str] = None,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+        field: Optional[str] = None,
+        band: Optional[str] = None,
+        limit: Optional[int] = None,
+        before: Optional[str] = None,
+        after: Optional[str] = None,
+        context_ticker: Optional[str] = None,
+        context_field: Optional[str] = None,
+        context_band: Optional[str] = None,
     ) -> Dict[str, Any]:
         """Get a summary for a single ticker.
+
+        Supports 4 modes depending on which parameters are provided:
+
+        - **Snapshot** (default): Current categorical state.
+        - **Historical snapshot**: Pass ``date`` for a point-in-time snapshot.
+        - **Historical series**: Pass ``start``/``end`` for a date range.
+        - **Events**: Pass ``field`` (and optionally ``band``) for band
+          transition history with aftermath data.
 
         Args:
             ticker: Asset ticker symbol (e.g. ``"AAPL"``).
             timeframe: ``"daily"`` or ``"weekly"`` (default ``"daily"``).
-            date: ISO 8601 date string (``YYYY-MM-DD``).
+            date: ISO 8601 date string (``YYYY-MM-DD``) for point-in-time.
+            start: Range start date (``YYYY-MM-DD``). Use with ``end``.
+            end: Range end date (``YYYY-MM-DD``). Use with ``start``.
+            field: Band field name for event queries (e.g. ``"rsi_zone"``).
+            band: Filter to a specific band value (e.g. ``"deep_oversold"``).
+            limit: Max event results (1-100). Only used with ``field``.
+            before: Return events before this date (``YYYY-MM-DD``).
+            after: Return events after this date (``YYYY-MM-DD``).
+            context_ticker: Cross-asset correlation ticker (e.g. ``"SPY"``).
+            context_field: Band field on context ticker.
+            context_band: Required band on context ticker.
 
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
@@ -170,48 +284,94 @@ class TickerDB:
         return self._request(
             "GET",
             f"/summary/{ticker}",
-            params={"timeframe": timeframe, "date": date},
+            params={
+                "timeframe": timeframe,
+                "date": date,
+                "start": start,
+                "end": end,
+                "field": field,
+                "band": band,
+                "limit": limit,
+                "before": before,
+                "after": after,
+                "context_ticker": context_ticker,
+                "context_field": context_field,
+                "context_band": context_band,
+            },
         )
 
-    def compare(
+    def search(
         self,
-        tickers: Union[List[str], str],
         *,
+        filters: Optional[Dict[str, Any]] = None,
         timeframe: Optional[str] = None,
-        date: Optional[str] = None,
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        fields: Optional[List[str]] = None,
+        sort_by: Optional[str] = None,
+        sort_direction: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Compare multiple tickers side-by-side.
+        """Search for assets matching filter criteria.
 
         Args:
-            tickers: List of ticker symbols or a comma-separated string.
+            filters: Dict of filter criteria.
             timeframe: ``"daily"`` or ``"weekly"``.
-            date: ISO 8601 date string.
+            limit: Max results to return.
+            offset: Pagination offset.
+            fields: List of column names to return (e.g.
+                ``["ticker", "sector", "momentum_rsi_zone"]``).
+                Use ``["*"]`` for all 120+ fields. Default if omitted: ticker,
+                asset_class, sector, performance, trend_direction, momentum_rsi_zone,
+                extremes_condition, extremes_condition_rarity, volatility_regime,
+                volume_ratio_band, fundamentals_valuation_zone, range_position.
+                ``ticker`` is always included.
+            sort_by: Column name to sort results by. Must be a valid field
+                from the schema.
+            sort_direction: ``"asc"`` or ``"desc"`` (default ``"desc"``).
 
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        if isinstance(tickers, list):
-            tickers = ",".join(tickers)
-        return self._request(
-            "GET",
-            "/compare",
-            params={"tickers": tickers, "timeframe": timeframe, "date": date},
-        )
+        import json as _json
 
-    def history(
-        self,
-        ticker: str,
-        *,
-        start: str,
-        end: str,
-        timeframe: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Get a historical series for a single ticker across a date range."""
-        return self._request(
-            "GET",
-            f"/history/{ticker}",
-            params={"timeframe": timeframe, "start": start, "end": end},
-        )
+        params: Dict[str, Any] = {
+            "timeframe": timeframe,
+            "limit": limit,
+            "offset": offset,
+            "sort_by": sort_by,
+            "sort_direction": sort_direction,
+        }
+        if filters is not None:
+            params["filters"] = _json.dumps(filters)
+        if fields is not None:
+            params["fields"] = _json.dumps(fields)
+        return self._request("GET", "/search", params=params)
+
+    def query(self) -> SearchQuery:
+        """Create a fluent query builder for the search endpoint.
+
+        Usage::
+
+            results = client.query() \\
+                .eq("momentum_rsi_zone", "oversold") \\
+                .eq("sector", "Technology") \\
+                .select("ticker", "sector", "momentum_rsi_zone") \\
+                .sort("extremes_condition_percentile", "asc") \\
+                .limit(10) \\
+                .execute()
+
+        Returns:
+            A :class:`SearchQuery` builder instance.
+        """
+        return SearchQuery(self)
+
+    def schema(self) -> Dict[str, Any]:
+        """Get the schema of available fields and their valid band values.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return self._request("GET", "/schema/fields")
 
     def watchlist(
         self,
@@ -254,269 +414,6 @@ class TickerDB:
         if timeframe is not None:
             params["timeframe"] = timeframe
         return self._request("GET", "/watchlist/changes", params=params)
-
-    def assets(self) -> Dict[str, Any]:
-        """List all available assets.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request("GET", "/assets")
-
-    def sectors(self) -> Dict[str, Any]:
-        """List all valid sector values with asset counts.
-
-        Use these values with the ``sector`` parameter on scan endpoints.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request("GET", "/list/sectors")
-
-    def events(
-        self,
-        *,
-        ticker: str,
-        field: str,
-        timeframe: Optional[str] = None,
-        band: Optional[str] = None,
-        limit: Optional[int] = None,
-        before: Optional[str] = None,
-        after: Optional[str] = None,
-        context_ticker: Optional[str] = None,
-        context_field: Optional[str] = None,
-        context_band: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Search for historical band transition events for a ticker.
-
-        Args:
-            ticker: Asset ticker symbol (e.g. "AAPL").
-            field: Band field name (e.g. "rsi_zone", "trend_direction").
-            timeframe: "daily" or "weekly". Defaults to "daily".
-            band: Filter to a specific band value (e.g. "deep_oversold").
-            limit: Max results (1-100, default 10).
-            before: Return events before this date (YYYY-MM-DD).
-            after: Return events after this date (YYYY-MM-DD).
-            context_ticker: Cross-asset correlation: a second ticker to
-                filter against (e.g. "SPY"). Requires context_field and
-                context_band. Plus/Pro only. Costs 2 credits.
-            context_field: Band field to check on the context ticker
-                (e.g. "trend_direction").
-            context_band: Only return events where the context ticker was
-                in this band on the event date (e.g. "downtrend").
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/events",
-            params={
-                "ticker": ticker,
-                "field": field,
-                "timeframe": timeframe,
-                "band": band,
-                "limit": limit,
-                "before": before,
-                "after": after,
-                "context_ticker": context_ticker,
-                "context_field": context_field,
-                "context_band": context_band,
-            },
-        )
-
-    def scan_oversold(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-        asset_class: Optional[str] = None,
-        sector: Optional[str] = None,
-        min_severity: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Scan for oversold assets.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-            asset_class: ``"stock"``, ``"crypto"``, ``"etf"``, or ``"all"``.
-            sector: Filter by sector.
-            min_severity: ``"oversold"`` or ``"deep_oversold"``.
-            sort_by: ``"severity"``, ``"days_oversold"``, or ``"condition_percentile"``.
-            limit: Max results (1-50).
-            date: ISO 8601 date string.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/scan/oversold",
-            params={
-                "timeframe": timeframe,
-                "asset_class": asset_class,
-                "sector": sector,
-                "min_severity": min_severity,
-                "sort_by": sort_by,
-                "limit": limit,
-                "date": date,
-            },
-        )
-
-    def scan_breakouts(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-        asset_class: Optional[str] = None,
-        sector: Optional[str] = None,
-        direction: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Scan for breakout patterns.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-            asset_class: ``"stock"``, ``"crypto"``, ``"etf"``, or ``"all"``.
-            sector: Filter by sector.
-            direction: ``"bullish"``, ``"bearish"``, or ``"all"``.
-            sort_by: ``"volume_ratio"``, ``"level_strength"``, or ``"condition_percentile"``.
-            limit: Max results (1-50).
-            date: ISO 8601 date string.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/scan/breakouts",
-            params={
-                "timeframe": timeframe,
-                "asset_class": asset_class,
-                "sector": sector,
-                "direction": direction,
-                "sort_by": sort_by,
-                "limit": limit,
-                "date": date,
-            },
-        )
-
-    def scan_unusual_volume(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-        asset_class: Optional[str] = None,
-        sector: Optional[str] = None,
-        min_ratio_band: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Scan for unusual volume activity.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-            asset_class: ``"stock"``, ``"crypto"``, ``"etf"``, or ``"all"``.
-            sector: Filter by sector.
-            min_ratio_band: ``"extremely_low"``, ``"low"``, ``"normal"``,
-                ``"above_average"``, ``"high"``, or ``"extremely_high"``.
-            sort_by: ``"volume_percentile"``.
-            limit: Max results (1-50).
-            date: ISO 8601 date string.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/scan/unusual-volume",
-            params={
-                "timeframe": timeframe,
-                "asset_class": asset_class,
-                "sector": sector,
-                "min_ratio_band": min_ratio_band,
-                "sort_by": sort_by,
-                "limit": limit,
-                "date": date,
-            },
-        )
-
-    def scan_valuation(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-        sector: Optional[str] = None,
-        direction: Optional[str] = None,
-        min_severity: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Scan for valuation outliers.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-            sector: Filter by sector.
-            direction: ``"undervalued"``, ``"overvalued"``, or ``"all"``.
-            min_severity: ``"deep_value"`` or ``"deeply_overvalued"``.
-            sort_by: ``"valuation_percentile"`` or ``"pe_vs_history"``.
-            limit: Max results (1-50).
-            date: ISO 8601 date string.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/scan/valuation",
-            params={
-                "timeframe": timeframe,
-                "sector": sector,
-                "direction": direction,
-                "min_severity": min_severity,
-                "sort_by": sort_by,
-                "limit": limit,
-                "date": date,
-            },
-        )
-
-    def scan_insider_activity(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-        sector: Optional[str] = None,
-        direction: Optional[str] = None,
-        sort_by: Optional[str] = None,
-        limit: Optional[int] = None,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Scan for notable insider trading activity.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-            sector: Filter by sector.
-            direction: ``"buying"``, ``"selling"``, or ``"all"``.
-            sort_by: ``"zone_severity"``, ``"shares_volume"``, or ``"net_ratio"``.
-            limit: Max results (1-50).
-            date: ISO 8601 date string.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._request(
-            "GET",
-            "/scan/insider-activity",
-            params={
-                "timeframe": timeframe,
-                "sector": sector,
-                "direction": direction,
-                "sort_by": sort_by,
-                "limit": limit,
-                "date": date,
-            },
-        )
 
     # ------------------------------------------------------------------
     # Webhook management

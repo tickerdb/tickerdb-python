@@ -61,22 +61,21 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
-### History
+### Summary with Date Range
 
-Get a historical series for one ticker across a date range.
+Get a summary series for one ticker across a date range by passing `start` and `end`.
 
 ```python
-result = client.history("AAPL", start="2025-01-01", end="2025-03-31")
-result = client.history("AAPL", timeframe="weekly", start="2024-01-01", end="2025-03-31")
+result = client.summary("AAPL", start="2025-01-01", end="2025-03-31")
+result = client.summary("AAPL", timeframe="weekly", start="2024-01-01", end="2025-03-31")
 ```
 
-### Compare
+### Summary with Events Filter
 
-Compare multiple tickers side-by-side.
+Query event occurrences for a specific band field.
 
 ```python
-result = client.compare(["AAPL", "MSFT", "GOOGL"])
-result = client.compare("AAPL,MSFT,GOOGL", timeframe="weekly")
+result = client.summary("AAPL", field="rsi_zone", band="deep_oversold")
 ```
 
 ### Watchlist
@@ -95,60 +94,6 @@ Get field-level state changes for your saved watchlist tickers since the last pi
 ```python
 result = client.watchlist_changes()
 result = client.watchlist_changes(timeframe="weekly")
-```
-
-### Assets
-
-List all available assets.
-
-```python
-result = client.assets()
-```
-
-### Scan: Oversold
-
-Find oversold assets across markets.
-
-```python
-result = client.scan_oversold()
-result = client.scan_oversold(
-    asset_class="stock",
-    min_severity="deep_oversold",
-    sort_by="severity",
-    limit=10,
-)
-```
-
-### Scan: Breakouts
-
-Detect breakout patterns.
-
-```python
-result = client.scan_breakouts(direction="bullish", asset_class="stock", limit=20)
-```
-
-### Scan: Unusual Volume
-
-Spot unusual volume activity.
-
-```python
-result = client.scan_unusual_volume(min_ratio_band="high", limit=10)
-```
-
-### Scan: Valuation
-
-Find valuation outliers.
-
-```python
-result = client.scan_valuation(direction="undervalued", sort_by="pe_vs_history")
-```
-
-### Scan: Insider Activity
-
-Track notable insider trading activity.
-
-```python
-result = client.scan_insider_activity(direction="buying", sort_by="net_ratio", limit=15)
 ```
 
 ### Band Stability Metadata
@@ -172,10 +117,21 @@ from tickerdb import Stability, BandMeta
 
 `Stability` is one of `"fresh"`, `"holding"`, `"established"`, or `"volatile"`. `BandMeta` contains the full metadata dict. Stability metadata is available on Plus and Pro tiers only.
 
-Stability context also appears in related endpoints:
+Stability context also appears in **Watchlist Changes**, which include stability fields for each changed band.
 
-- **Watchlist Changes** include stability fields for each changed band.
-- **Scanners** return `*_stability` and `*_flips_recent` columns for relevant bands.
+### Query Builder
+
+The SDK includes a fluent query builder for searching assets by categorical state. Chain methods in order: select, filters, sort, limit.
+
+```python
+results = client.query() \
+    .select('ticker', 'sector', 'momentum_rsi_zone') \
+    .eq('momentum_rsi_zone', 'oversold') \
+    .eq('sector', 'Technology') \
+    .sort('extremes_condition_percentile', 'asc') \
+    .limit(10) \
+    .execute()
+```
 
 ## Error Handling
 

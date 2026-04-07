@@ -14,7 +14,6 @@ else:
 # ---------------------------------------------------------------------------
 
 Timeframe = Literal["daily", "weekly"]
-AssetClass = Literal["stock", "crypto", "etf", "all"]
 Stability = Literal["fresh", "holding", "established", "volatile"]
 WebhookEvents = Dict[str, bool]
 
@@ -45,7 +44,7 @@ class BandMeta(TypedDict, total=False):
     """Stability metadata for a band field (Plus/Pro tiers).
 
     Appears as a sibling key with ``_meta`` suffix next to each band value
-    in summary, compare, and watchlist responses (e.g. ``rsi_zone_meta``).
+    in summary and watchlist responses (e.g. ``rsi_zone_meta``).
     """
 
     timeframe: Timeframe
@@ -94,85 +93,39 @@ class EventsResponse(TypedDict, total=False):
     context: Optional[EventsContext]
 
 
-class EventsParams(TypedDict, total=False):
-    """Parameters for the events endpoint."""
-
-    ticker: str
-    field: str
-    timeframe: Timeframe
-    band: str
-    limit: int
-    before: str
-    after: str
-    context_ticker: str
-    context_field: str
-    context_band: str
-
-
 # ---------------------------------------------------------------------------
-# Scan parameter TypedDicts (for IDE autocompletion)
+# Search types
 # ---------------------------------------------------------------------------
 
 
-class OversoldParams(TypedDict, total=False):
-    """Parameters for the oversold scan endpoint."""
+class SearchParams(TypedDict, total=False):
+    """Parameters for the search endpoint."""
 
+    filters: Dict[str, Any]
     timeframe: Timeframe
-    asset_class: AssetClass
-    sector: str
-    min_severity: Literal["oversold", "deep_oversold"]
-    sort_by: Literal["severity", "days_oversold", "condition_percentile"]
     limit: int
-    date: str
+    offset: int
+    fields: List[str]
+    sort_by: str
+    sort_direction: Literal["asc", "desc"]
 
 
-class BreakoutsParams(TypedDict, total=False):
-    """Parameters for the breakouts scan endpoint."""
+class SearchResponse(TypedDict, total=False):
+    """Response from the search endpoint."""
 
-    timeframe: Timeframe
-    asset_class: AssetClass
-    sector: str
-    direction: Literal["bullish", "bearish", "all"]
-    sort_by: Literal["volume_ratio", "level_strength", "condition_percentile"]
-    limit: int
-    date: str
+    results: List[Dict[str, Any]]
+    total: int
 
 
-class UnusualVolumeParams(TypedDict, total=False):
-    """Parameters for the unusual volume scan endpoint."""
-
-    timeframe: Timeframe
-    asset_class: AssetClass
-    sector: str
-    min_ratio_band: Literal[
-        "extremely_low", "low", "normal", "above_average", "high", "extremely_high"
-    ]
-    sort_by: Literal["volume_percentile"]
-    limit: int
-    date: str
+# ---------------------------------------------------------------------------
+# Schema types
+# ---------------------------------------------------------------------------
 
 
-class ValuationParams(TypedDict, total=False):
-    """Parameters for the valuation scan endpoint."""
+class SchemaResponse(TypedDict, total=False):
+    """Response from the schema/fields endpoint."""
 
-    timeframe: Timeframe
-    sector: str
-    direction: Literal["undervalued", "overvalued", "all"]
-    min_severity: Literal["deep_value", "deeply_overvalued"]
-    sort_by: Literal["valuation_percentile", "pe_vs_history"]
-    limit: int
-    date: str
-
-
-class InsiderActivityParams(TypedDict, total=False):
-    """Parameters for the insider activity scan endpoint."""
-
-    timeframe: Timeframe
-    sector: str
-    direction: Literal["buying", "selling", "all"]
-    sort_by: Literal["zone_severity", "shares_volume", "net_ratio"]
-    limit: int
-    date: str
+    fields: Dict[str, Any]
 
 
 # ---------------------------------------------------------------------------
@@ -185,26 +138,3 @@ class APIResponse(TypedDict):
 
     data: Any
     rate_limits: RateLimits
-
-
-class HistoryRow(TypedDict, total=False):
-    date: str
-    schema_version: str
-    summary: Dict[str, Any]
-    levels: Optional[Dict[str, Any]]
-
-
-class HistoryResponse(TypedDict, total=False):
-    ticker: str
-    timeframe: Timeframe
-    start: str
-    end: str
-    row_count: int
-    rows: List[HistoryRow]
-
-
-class HistoryParams(TypedDict):
-    ticker: str
-    start: str
-    end: str
-    timeframe: Timeframe
