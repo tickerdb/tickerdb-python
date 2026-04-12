@@ -15,6 +15,8 @@ else:
 
 Timeframe = Literal["daily", "weekly"]
 Stability = Literal["fresh", "holding", "established", "volatile"]
+SearchOperator = Literal["eq", "neq", "in", "gt", "gte", "lt", "lte"]
+SchemaFieldType = Literal["text", "integer", "numeric", "boolean", "bigint"]
 WebhookEvents = Dict[str, bool]
 
 # ---------------------------------------------------------------------------
@@ -98,10 +100,18 @@ class EventsResponse(TypedDict, total=False):
 # ---------------------------------------------------------------------------
 
 
+class SearchFilter(TypedDict):
+    """Single search filter using canonical schema field names."""
+
+    field: str
+    op: SearchOperator
+    value: Any
+
+
 class SearchParams(TypedDict, total=False):
     """Parameters for the search endpoint."""
 
-    filters: Dict[str, Any]
+    filters: List[SearchFilter]
     timeframe: Timeframe
     limit: int
     offset: int
@@ -113,8 +123,22 @@ class SearchParams(TypedDict, total=False):
 class SearchResponse(TypedDict, total=False):
     """Response from the search endpoint."""
 
+    timeframe: Timeframe
+    date: Optional[str]
+    fields: List[str]
+    filter_count: int
+    result_count: int
     results: List[Dict[str, Any]]
-    total: int
+
+
+class SchemaField(TypedDict, total=False):
+    """Queryable field definition from the schema endpoint."""
+
+    name: str
+    type: SchemaFieldType
+    category: str
+    values: List[str]
+    description: str
 
 
 # ---------------------------------------------------------------------------
@@ -125,7 +149,10 @@ class SearchResponse(TypedDict, total=False):
 class SchemaResponse(TypedDict, total=False):
     """Response from the schema/fields endpoint."""
 
-    fields: Dict[str, Any]
+    total_fields: int
+    categories: List[str]
+    operators: List[SearchOperator]
+    fields: List[SchemaField]
 
 
 # ---------------------------------------------------------------------------

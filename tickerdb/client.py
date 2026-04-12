@@ -303,7 +303,7 @@ class TickerDB:
     def search(
         self,
         *,
-        filters: Optional[Dict[str, Any]] = None,
+        filters: Optional[List[Dict[str, Any]]] = None,
         timeframe: Optional[str] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
@@ -314,7 +314,10 @@ class TickerDB:
         """Search for assets matching filter criteria.
 
         Args:
-            filters: Dict of filter criteria.
+            filters: List of ``{"field", "op", "value"}`` filter objects.
+                Example: ``[{"field": "momentum_rsi_zone", "op": "eq", "value": "oversold"}]``.
+                Canonical field names come from ``/v1/schema/fields`` and use
+                flat snake_case.
             timeframe: ``"daily"`` or ``"weekly"``.
             limit: Max results to return.
             offset: Pagination offset.
