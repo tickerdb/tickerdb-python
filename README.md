@@ -80,11 +80,23 @@ result = client.summary("AAPL", field="rsi_zone", band="deep_oversold")
 
 ### Watchlist
 
-Post a list of tickers to get watchlist data.
+Get the saved watchlist snapshot for the authenticated account.
 
 ```python
-result = client.watchlist(["AAPL", "MSFT", "TSLA"])
-result = client.watchlist(["AAPL", "MSFT"], timeframe="weekly")
+result = client.watchlist()
+result = client.watchlist(date="2025-01-15")
+```
+
+Add tickers to the saved watchlist:
+
+```python
+result = client.add_to_watchlist(["AAPL", "MSFT", "TSLA"])
+```
+
+Remove tickers from the saved watchlist:
+
+```python
+result = client.remove_from_watchlist(["TSLA"])
 ```
 
 ### Watchlist Changes

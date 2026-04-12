@@ -380,23 +380,57 @@ class AsyncTickerDB:
 
     async def watchlist(
         self,
-        tickers: List[str],
         *,
-        timeframe: Optional[str] = None,
+        date: Optional[str] = None,
     ) -> Dict[str, Any]:
-        """Get watchlist data for multiple tickers.
+        """Get the saved watchlist snapshot for the authenticated account.
 
         Args:
-            tickers: List of ticker symbols.
-            timeframe: ``"daily"`` or ``"weekly"``.
+            date: Optional point-in-time snapshot date (``YYYY-MM-DD``).
 
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        body: Dict[str, Any] = {"tickers": tickers}
-        if timeframe is not None:
-            body["timeframe"] = timeframe
-        return await self._request("POST", "/watchlist", json=body)
+        params: Dict[str, str] = {}
+        if date is not None:
+            params["date"] = date
+        return await self._request("GET", "/watchlist", params=params)
+
+    async def add_to_watchlist(
+        self,
+        tickers: List[str],
+    ) -> Dict[str, Any]:
+        """Add ticker symbols to the saved watchlist.
+
+        Args:
+            tickers: List of ticker symbols to save.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return await self._request(
+            "POST",
+            "/watchlist",
+            json={"tickers": [str(t).strip().upper() for t in tickers]},
+        )
+
+    async def remove_from_watchlist(
+        self,
+        tickers: List[str],
+    ) -> Dict[str, Any]:
+        """Remove ticker symbols from the saved watchlist.
+
+        Args:
+            tickers: List of ticker symbols to remove.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return await self._request(
+            "DELETE",
+            "/watchlist",
+            json={"tickers": [str(t).strip().upper() for t in tickers]},
+        )
 
     async def watchlist_changes(
         self,
