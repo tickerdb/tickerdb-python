@@ -246,6 +246,7 @@ class AsyncTickerDB:
         date: Optional[str] = None,
         start: Optional[str] = None,
         end: Optional[str] = None,
+        sample: Optional[str] = None,
         field: Optional[str] = None,
         band: Optional[str] = None,
         limit: Optional[int] = None,
@@ -271,9 +272,12 @@ class AsyncTickerDB:
             date: ISO 8601 date string (``YYYY-MM-DD``) for point-in-time.
             start: Range start date (``YYYY-MM-DD``). Use with ``end``.
             end: Range end date (``YYYY-MM-DD``). Use with ``start``.
+            sample: Date range mode only. Use ``"even"`` to evenly sample
+                snapshots across the full ``start``/``end`` span.
             field: Band field name for event queries (e.g. ``"rsi_zone"``).
             band: Filter to a specific band value (e.g. ``"deep_oversold"``).
-            limit: Max event results (1-100). Only used with ``field``.
+            limit: For event mode, max results (1-100). For ``sample="even"``
+                date ranges, requested sampled rows capped by plan.
             before: Return events before this date (``YYYY-MM-DD``).
             after: Return events after this date (``YYYY-MM-DD``).
             context_ticker: Cross-asset correlation ticker (e.g. ``"SPY"``).
@@ -291,6 +295,7 @@ class AsyncTickerDB:
                 "date": date,
                 "start": start,
                 "end": end,
+                "sample": sample,
                 "field": field,
                 "band": band,
                 "limit": limit,
