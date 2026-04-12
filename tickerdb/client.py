@@ -244,6 +244,7 @@ class TickerDB:
         date: Optional[str] = None,
         start: Optional[str] = None,
         end: Optional[str] = None,
+        fields: Optional[List[str]] = None,
         sample: Optional[str] = None,
         field: Optional[str] = None,
         band: Optional[str] = None,
@@ -270,6 +271,9 @@ class TickerDB:
             date: ISO 8601 date string (``YYYY-MM-DD``) for point-in-time.
             start: Range start date (``YYYY-MM-DD``). Use with ``end``.
             end: Range end date (``YYYY-MM-DD``). Use with ``start``.
+            fields: Optional list of summary fields to return. Supports
+                sections like ``"trend"`` and dotted paths like
+                ``"trend.direction"`` or ``"momentum.rsi_zone"``.
             sample: Date range mode only. Use ``"even"`` to evenly sample
                 snapshots across the full ``start``/``end`` span.
             field: Band field name for event queries (e.g. ``"rsi_zone"``).
@@ -285,24 +289,30 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
+        import json as _json
+
+        params: Dict[str, Any] = {
+            "timeframe": timeframe,
+            "date": date,
+            "start": start,
+            "end": end,
+            "sample": sample,
+            "field": field,
+            "band": band,
+            "limit": limit,
+            "before": before,
+            "after": after,
+            "context_ticker": context_ticker,
+            "context_field": context_field,
+            "context_band": context_band,
+        }
+        if fields is not None:
+            params["fields"] = _json.dumps(fields)
+
         return self._request(
             "GET",
             f"/summary/{ticker}",
-            params={
-                "timeframe": timeframe,
-                "date": date,
-                "start": start,
-                "end": end,
-                "sample": sample,
-                "field": field,
-                "band": band,
-                "limit": limit,
-                "before": before,
-                "after": after,
-                "context_ticker": context_ticker,
-                "context_field": context_field,
-                "context_band": context_band,
-            },
+            params=params,
         )
 
     def search(

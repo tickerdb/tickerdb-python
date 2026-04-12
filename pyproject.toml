@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tickerdb"
-version = "0.1.5"
+version = "0.1.6"
 description = "Python SDK for the TickerDB financial data API"
 readme = "README.md"
 license = "MIT"
