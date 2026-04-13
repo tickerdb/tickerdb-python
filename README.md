@@ -77,6 +77,7 @@ Query event occurrences for a specific band field.
 
 ```python
 result = client.summary("AAPL", field="momentum_rsi_zone", band="deep_oversold")
+result = client.summary("AAPL", field="extremes_condition", band="deep_oversold")
 ```
 
 ### Watchlist
