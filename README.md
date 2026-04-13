@@ -30,6 +30,7 @@ client = TickerDB("your_api_key")
 # Get a ticker summary
 result = client.summary("AAPL")
 print(result["data"])
+print(result["data"]["as_of_date"])
 
 # Rate limit info is included on every response
 print(result["rate_limits"]["requests_remaining"])
@@ -75,7 +76,7 @@ result = client.summary("AAPL", timeframe="weekly", start="2024-01-01", end="202
 Query event occurrences for a specific band field.
 
 ```python
-result = client.summary("AAPL", field="rsi_zone", band="deep_oversold")
+result = client.summary("AAPL", field="momentum_rsi_zone", band="deep_oversold")
 ```
 
 ### Watchlist
@@ -84,6 +85,7 @@ Get the saved watchlist snapshot for the authenticated account.
 
 ```python
 result = client.watchlist()
+print(result["data"]["as_of_date"])
 result = client.watchlist(date="2025-01-15")
 ```
 
@@ -111,6 +113,8 @@ result = client.watchlist_changes(timeframe="weekly")
 ### Band Stability Metadata
 
 Every band field (trend direction, momentum zone, etc.) now includes a sibling `_meta` object with stability context. This tells you how long a state has been held, how often it has flipped recently, and an overall stability label.
+
+Summary and watchlist responses also include `as_of_date` so you can tell which market session the snapshot represents.
 
 ```python
 result = client.summary("AAPL")
