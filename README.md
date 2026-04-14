@@ -62,6 +62,8 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
+Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, richer `volume` fields such as `price_direction_on_volume`, level metadata such as `support_level.status_meta`, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
+
 ### Summary with Date Range
 
 Get a summary series for one ticker across a date range by passing `start` and `end`.
