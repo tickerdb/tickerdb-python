@@ -1,9 +1,9 @@
-# TickerDB Python SDK
+# TickerDB - Financial context for agents.
 
 [![PyPI version](https://img.shields.io/pypi/v/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 [![Python versions](https://img.shields.io/pypi/pyversions/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 
-The official Python SDK for [TickerDB](https://tickerdb.com) -- financial data and market intelligence API.
+Pre-computed market data that improves agent reasoning, reduces token usage, and replaces custom data pipelines.
 
 - Sync and async clients
 - Full type hints for IDE autocompletion
