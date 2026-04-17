@@ -62,7 +62,17 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
-Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, richer `volume` fields such as `price_direction_on_volume`, level metadata such as `support_level.status_meta`, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
+Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, richer `volume` fields such as `price_direction_on_volume`, optional level metadata such as `support_level.status_meta` when requested, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
+
+Summary stays band-first by default, so sibling `_meta` / `status_meta` stability objects are omitted unless you opt in:
+
+```python
+result = client.summary("AAPL", meta=True)
+result = client.summary(
+    "AAPL",
+    fields=["trend.direction", "trend.direction_meta"],
+)
+```
 
 ### Summary with Date Range
 
@@ -115,12 +125,12 @@ result = client.watchlist_changes(timeframe="weekly")
 
 ### Band Stability Metadata
 
-Every band field (trend direction, momentum zone, etc.) now includes a sibling `_meta` object with stability context. This tells you how long a state has been held, how often it has flipped recently, and an overall stability label.
+Summary omits sibling `_meta` objects by default so the primary band label stays front-and-center. Set `meta=True` to include full paid-tier stability metadata across the response, or request just the few `*_meta` fields you need via `fields`.
 
 Summary and watchlist responses also include `as_of_date` so you can tell which market session the snapshot represents.
 
 ```python
-result = client.summary("AAPL")
+result = client.summary("AAPL", meta=True)
 data = result["data"]
 
 # The band value itself
@@ -136,7 +146,7 @@ from tickerdb import Stability, BandMeta
 
 `Stability` is one of `"fresh"`, `"holding"`, `"established"`, or `"volatile"`. `BandMeta` contains the full metadata dict. Stability metadata is available on Plus and Pro tiers only.
 
-Stability context also appears in **Watchlist Changes**, which include stability fields for each changed band.
+Stability context also appears in **Watchlist**, which still includes paid-tier `_meta` objects by default, and in **Watchlist Changes**, which include stability fields inline for each changed band.
 
 ### Query Builder
 

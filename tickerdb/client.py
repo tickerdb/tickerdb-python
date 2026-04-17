@@ -245,6 +245,7 @@ class TickerDB:
         start: Optional[str] = None,
         end: Optional[str] = None,
         fields: Optional[List[str]] = None,
+        meta: Optional[bool] = None,
         sample: Optional[str] = None,
         field: Optional[str] = None,
         band: Optional[str] = None,
@@ -274,6 +275,9 @@ class TickerDB:
             fields: Optional list of summary fields to return. Supports
                 sections like ``"trend"`` and dotted paths like
                 ``"trend.direction"`` or ``"momentum.rsi_zone"``.
+            meta: Snapshot and history modes only. Set ``True`` to include
+                sibling ``_meta`` / ``status_meta`` stability objects.
+                Explicit ``*_meta`` field paths still work without this flag.
             sample: Date range mode only. Use ``"even"`` to evenly sample
                 snapshots across the full ``start``/``end`` span.
             field: Band field name for event queries (e.g. ``"rsi_zone"``).
@@ -308,6 +312,8 @@ class TickerDB:
         }
         if fields is not None:
             params["fields"] = _json.dumps(fields)
+        if meta is not None:
+            params["meta"] = "true" if meta else "false"
 
         return self._request(
             "GET",
