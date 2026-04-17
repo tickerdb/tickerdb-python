@@ -181,7 +181,7 @@ class TickerDB:
 
         from tickerdb import TickerDB
 
-        client = TickerDB("your_api_key")
+        client = TickerDB("tdb_your_api_key")
         result = client.summary("AAPL")
         print(result["data"])
         print(result["rate_limits"])

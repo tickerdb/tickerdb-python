@@ -4,14 +4,14 @@ Usage::
 
     from tickerdb import TickerDB
 
-    client = TickerDB("your_api_key")
+    client = TickerDB("tdb_your_api_key")
     result = client.summary("AAPL")
 
 For async usage::
 
     from tickerdb import AsyncTickerDB
 
-    async with AsyncTickerDB("your_api_key") as client:
+    async with AsyncTickerDB("tdb_your_api_key") as client:
         result = await client.summary("AAPL")
 """
 

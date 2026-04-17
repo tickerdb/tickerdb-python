@@ -183,7 +183,7 @@ class AsyncTickerDB:
         from tickerdb import AsyncTickerDB
 
         async def main():
-            async with AsyncTickerDB("your_api_key") as client:
+            async with AsyncTickerDB("tdb_your_api_key") as client:
                 result = await client.summary("AAPL")
                 print(result["data"])
 

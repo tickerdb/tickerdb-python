@@ -1,9 +1,9 @@
-# TickerDB - Financial context for agents.
+# TickerDB - Market context for agents.
 
 [![PyPI version](https://img.shields.io/pypi/v/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 [![Python versions](https://img.shields.io/pypi/pyversions/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 
-Pre-computed market data that improves agent reasoning, reduces token usage, and replaces custom data pipelines.
+Pre-computed EOD market context that improves reasoning, reduces token usage, and replaces data pipelines.
 
 - Sync and async clients
 - Full type hints for IDE autocompletion
@@ -25,7 +25,7 @@ pip install tickerdb
 ```python
 from tickerdb import TickerDB
 
-client = TickerDB("your_api_key")
+client = TickerDB("tdb_your_api_key")
 
 # Get a ticker summary
 result = client.summary("AAPL")
@@ -43,7 +43,7 @@ import asyncio
 from tickerdb import AsyncTickerDB
 
 async def main():
-    async with AsyncTickerDB("your_api_key") as client:
+    async with AsyncTickerDB("tdb_your_api_key") as client:
         result = await client.summary("AAPL")
         print(result["data"])
 
@@ -159,7 +159,7 @@ The SDK raises typed exceptions for all API errors:
 ```python
 from tickerdb import TickerDB, TickerDBError, RateLimitError, NotFoundError
 
-client = TickerDB("your_api_key")
+client = TickerDB("tdb_your_api_key")
 
 try:
     result = client.summary("INVALID_TICKER")
