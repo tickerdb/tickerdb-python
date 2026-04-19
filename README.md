@@ -3,7 +3,7 @@
 [![PyPI version](https://img.shields.io/pypi/v/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 [![Python versions](https://img.shields.io/pypi/pyversions/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 
-Pre-computed EOD market context that improves reasoning, reduces token usage, and replaces data pipelines.
+Connect your agent to pre-computed market context that improves reasoning and reduces token usage.
 
 - Sync and async clients
 - Full type hints for IDE autocompletion
