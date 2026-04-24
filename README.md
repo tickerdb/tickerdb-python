@@ -74,6 +74,14 @@ result = client.summary(
 )
 ```
 
+MA distance fields are available both in snapshots and events:
+
+```python
+result = client.summary("AAPL", fields=["trend.distance_from_ma_band.ma_50"])
+print(result["data"]["trend"]["distance_from_ma_band"]["ma_50"])
+# "slightly_above"
+```
+
 ### Summary with Date Range
 
 Get a summary series for one ticker across a date range by passing `start` and `end`.
@@ -90,7 +98,18 @@ Query event occurrences for a specific band field.
 ```python
 result = client.summary("AAPL", field="momentum_rsi_zone", band="deep_oversold")
 result = client.summary("AAPL", field="extremes_condition", band="deep_oversold")
+result = client.summary("BTCUSD", field="trend_distance_ma50", band="above")
+result = client.summary(
+    "BTCUSD",
+    field="trend_distance_ma50",
+    band="above",
+    context_ticker="SPY",
+    context_field="trend_distance_ma50",
+    context_band="below",
+)
 ```
+
+For MA distance event fields such as `trend_distance_ma50`, grouped `band="above"` and `band="below"` aliases are supported in addition to granular values like `slightly_above`.
 
 ### Watchlist
 
@@ -154,8 +173,8 @@ The SDK includes a fluent query builder for searching assets by categorical stat
 
 ```python
 results = client.query() \
-    .select('ticker', 'sector', 'momentum_rsi_zone') \
-    .eq('momentum_rsi_zone', 'oversold') \
+    .select('ticker', 'sector', 'trend_distance_ma50', 'momentum_rsi_zone') \
+    .eq('trend_distance_ma50', 'slightly_above') \
     .eq('sector', 'Technology') \
     .sort('extremes_condition_percentile', 'asc') \
     .limit(10) \

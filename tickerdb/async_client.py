@@ -88,9 +88,9 @@ class AsyncSearchQuery:
     Usage::
 
         results = await client.query() \\
-            .eq("momentum_rsi_zone", "oversold") \\
+            .eq("trend_distance_ma50", "slightly_above") \\
             .eq("sector", "Technology") \\
-            .select("ticker", "sector", "momentum_rsi_zone") \\
+            .select("ticker", "sector", "trend_distance_ma50") \\
             .sort("extremes_condition_percentile", "asc") \\
             .limit(10) \\
             .execute()
@@ -282,14 +282,18 @@ class AsyncTickerDB:
                 Explicit ``*_meta`` field paths still work without this flag.
             sample: Date range mode only. Use ``"even"`` to evenly sample
                 snapshots across the full ``start``/``end`` span.
-            field: Band field name for event queries (e.g. ``"rsi_zone"``).
+            field: Band field name for event queries (e.g.
+                ``"momentum_rsi_zone"`` or ``"trend_distance_ma50"``).
             band: Filter to a specific band value (e.g. ``"deep_oversold"``).
+                MA distance event fields also support grouped aliases
+                ``"above"`` and ``"below"``.
             limit: For event mode, max results (1-100). For ``sample="even"``
                 date ranges, requested sampled rows capped by plan.
             before: Return events before this date (``YYYY-MM-DD``).
             after: Return events after this date (``YYYY-MM-DD``).
             context_ticker: Cross-asset correlation ticker (e.g. ``"SPY"``).
-            context_field: Band field on context ticker.
+            context_field: Band field on context ticker (e.g.
+                ``"trend_direction"`` or ``"trend_distance_ma50"``).
             context_band: Required band on context ticker.
 
         Returns:
@@ -379,9 +383,9 @@ class AsyncTickerDB:
         Usage::
 
             results = await client.query() \\
-                .eq("momentum_rsi_zone", "oversold") \\
+                .eq("trend_distance_ma50", "slightly_above") \\
                 .eq("sector", "Technology") \\
-                .select("ticker", "sector", "momentum_rsi_zone") \\
+                .select("ticker", "sector", "trend_distance_ma50") \\
                 .sort("extremes_condition_percentile", "asc") \\
                 .limit(10) \\
                 .execute()
