@@ -111,6 +111,22 @@ result = client.summary(
 
 For MA distance event fields such as `trend_distance_ma50`, grouped `band="above"` and `band="below"` aliases are supported in addition to granular values like `slightly_above`.
 
+Use `stats=True` when you want aggregated outcomes instead of raw event rows:
+
+```python
+result = client.summary(
+    "SOLUSD",
+    field="trend_distance_ma20",
+    band="above",
+    context_ticker="QQQ",
+    context_field="trend_distance_ma20",
+    context_band="above",
+    before="2025-07-01",
+    stats=True,
+)
+print(result["data"]["stats"])
+```
+
 ### Watchlist
 
 Get the saved watchlist snapshot for the authenticated account.

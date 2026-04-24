@@ -252,6 +252,7 @@ class TickerDB:
         limit: Optional[int] = None,
         before: Optional[str] = None,
         after: Optional[str] = None,
+        stats: Optional[bool] = None,
         context_ticker: Optional[str] = None,
         context_field: Optional[str] = None,
         context_band: Optional[str] = None,
@@ -285,10 +286,13 @@ class TickerDB:
             band: Filter to a specific band value (e.g. ``"deep_oversold"``).
                 MA distance event fields also support grouped aliases
                 ``"above"`` and ``"below"``.
-            limit: For event mode, max results (1-100). For ``sample="even"``
+            limit: For event mode, max results (1-50), returned newest-first
+                by default. For ``sample="even"``
                 date ranges, requested sampled rows capped by plan.
             before: Return events before this date (``YYYY-MM-DD``).
             after: Return events after this date (``YYYY-MM-DD``).
+            stats: Event mode only. Set ``True`` to return aggregate stats
+                instead of raw event rows.
             context_ticker: Cross-asset correlation ticker (e.g. ``"SPY"``).
             context_field: Band field on context ticker (e.g.
                 ``"trend_direction"`` or ``"trend_distance_ma50"``).
@@ -310,6 +314,7 @@ class TickerDB:
             "limit": limit,
             "before": before,
             "after": after,
+            "stats": "true" if stats else None,
             "context_ticker": context_ticker,
             "context_field": context_field,
             "context_band": context_band,

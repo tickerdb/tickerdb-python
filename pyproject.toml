@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tickerdb"
-version = "0.1.14"
+version = "0.1.15"
 description = "Connect your agent to pre-computed market context that improves reasoning and reduces token usage."
 readme = "README.md"
 license = "MIT"
