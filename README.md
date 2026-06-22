@@ -62,7 +62,7 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
-Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, richer `volume` fields such as `price_direction_on_volume`, optional level metadata such as `support_level.status_meta` when requested, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
+Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, richer `volume` fields such as `price_direction_on_volume`, raw support/resistance prices such as `support_level.level_price`, optional level metadata such as `support_level.status_meta` when requested, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
 
 Summary stays band-first by default, so sibling `_meta` / `status_meta` stability objects are omitted unless you opt in:
 
