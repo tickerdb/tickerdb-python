@@ -88,7 +88,7 @@ class SearchQuery:
     Usage::
 
         results = client.query() \\
-            .eq("trend_distance_ma50", "slightly_above") \\
+            .eq("trend_distance_ma50", "proximity_above") \\
             .eq("sector", "Technology") \\
             .select("ticker", "sector", "trend_distance_ma50") \\
             .sort("extremes_condition_percentile", "asc") \\
@@ -354,7 +354,8 @@ class TickerDB:
             fields: List of column names to return (e.g.
                 ``["ticker", "sector", "momentum_rsi_zone"]``).
                 Use ``["*"]`` for all 120+ fields. Default if omitted: ticker,
-                asset_class, sector, performance, trend_direction, momentum_rsi_zone,
+                asset_class, sector, performance, trend_direction, trend_ma_slope_band,
+                trend_ma_compression_band, trend_ma_crossover_event, momentum_rsi_zone,
                 extremes_condition, extremes_condition_rarity, volatility_regime,
                 volume_ratio_band, fundamentals_valuation_zone, range_position.
                 ``ticker`` is always included.
@@ -386,7 +387,7 @@ class TickerDB:
         Usage::
 
             results = client.query() \\
-                .eq("trend_distance_ma50", "slightly_above") \\
+                .eq("trend_distance_ma50", "proximity_above") \\
                 .eq("sector", "Technology") \\
                 .select("ticker", "sector", "trend_distance_ma50") \\
                 .sort("extremes_condition_percentile", "asc") \\

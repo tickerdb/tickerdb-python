@@ -79,7 +79,16 @@ MA distance fields are available both in snapshots and events:
 ```python
 result = client.summary("AAPL", fields=["trend.distance_from_ma_band.ma_50"])
 print(result["data"]["trend"]["distance_from_ma_band"]["ma_50"])
-# "slightly_above"
+# "proximity_above"
+```
+
+Semantic MA fields are available in the same `trend` object:
+
+```python
+result = client.summary(
+    "AAPL",
+    fields=["trend.ma_slope_band", "trend.ma_compression_band", "trend.ma_crossover_event"],
+)
 ```
 
 ### Summary with Date Range
@@ -109,7 +118,7 @@ result = client.summary(
 )
 ```
 
-For MA distance event fields such as `trend_distance_ma50`, grouped `band="above"` and `band="below"` aliases are supported in addition to granular values like `slightly_above`.
+For MA distance event fields such as `trend_distance_ma50`, grouped `band="above"` and `band="below"` aliases are supported in addition to granular values like `proximity_above`.
 
 Use `stats=True` when you want aggregated outcomes instead of raw event rows:
 
@@ -190,7 +199,7 @@ The SDK includes a fluent query builder for searching assets by categorical stat
 ```python
 results = client.query() \
     .select('ticker', 'sector', 'trend_distance_ma50', 'momentum_rsi_zone') \
-    .eq('trend_distance_ma50', 'slightly_above') \
+    .eq('trend_distance_ma50', 'proximity_above') \
     .eq('sector', 'Technology') \
     .sort('extremes_condition_percentile', 'asc') \
     .limit(10) \
