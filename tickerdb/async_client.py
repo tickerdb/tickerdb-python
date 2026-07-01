@@ -356,10 +356,13 @@ class AsyncTickerDB:
             fields: List of column names to return (e.g.
                 ``["ticker", "sector", "momentum_rsi_zone"]``).
                 Use ``["*"]`` for all 120+ fields. Default if omitted: ticker,
-                asset_class, sector, performance, trend_direction, trend_ma_slope_band,
+                asset_class, sector, performance, trend_direction, trend_ma20_slope,
                 trend_ma_compression_band, trend_ma_crossover_event, momentum_rsi_zone,
                 extremes_condition, extremes_condition_rarity, volatility_regime,
                 volume_ratio_band, fundamentals_valuation_zone, range_position.
+                Request ma8 through ma200 for raw MA values.
+                Request trend_ma8_slope through trend_ma200_slope for the full MA
+                slope set.
                 ``ticker`` is always included.
             sort_by: Column name to sort results by. Must be a valid field
                 from the schema.

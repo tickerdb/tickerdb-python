@@ -87,7 +87,16 @@ Semantic MA fields are available in the same `trend` object:
 ```python
 result = client.summary(
     "AAPL",
-    fields=["trend.ma_slope_band", "trend.ma_compression_band", "trend.ma_crossover_event"],
+    fields=[
+        "trend.ma_slopes.ma_8",
+        "trend.ma_slopes.ma_20",
+        "trend.ma_slopes.ma_40",
+        "trend.ma_slopes.ma_50",
+        "trend.ma_slopes.ma_100",
+        "trend.ma_slopes.ma_200",
+        "trend.ma_compression_band",
+        "trend.ma_crossover_event",
+    ],
 )
 ```
 
