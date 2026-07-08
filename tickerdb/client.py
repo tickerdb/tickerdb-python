@@ -282,7 +282,8 @@ class TickerDB:
             sample: Date range mode only. Use ``"even"`` to evenly sample
                 snapshots across the full ``start``/``end`` span.
             field: Band field name for event queries (e.g.
-                ``"momentum_rsi_zone"`` or ``"trend_distance_ma50"``).
+                ``"momentum_rsi_zone"``, ``"pattern_bull_flag"``, or
+                ``"trend_distance_ma50"``).
             band: Filter to a specific band value (e.g. ``"deep_oversold"``).
                 MA distance event fields also support grouped aliases
                 ``"above"`` and ``"below"``.
@@ -357,7 +358,8 @@ class TickerDB:
                 asset_class, sector, performance, trend_direction, trend_ma20_slope,
                 trend_ma_compression_band, trend_ma_crossover_event, momentum_rsi_zone,
                 extremes_condition, extremes_condition_rarity, volatility_regime,
-                volume_ratio_band, fundamentals_valuation_zone, range_position.
+                volume_ratio_band, pattern_bull_flag, pattern_bear_flag,
+                fundamentals_valuation_zone, range_position.
                 Request ma8 through ma200 for raw MA values.
                 Request trend_ma8_slope through trend_ma200_slope for the full MA
                 slope set.
