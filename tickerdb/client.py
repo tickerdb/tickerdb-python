@@ -90,7 +90,7 @@ class SearchQuery:
         results = client.query() \\
             .eq("trend_distance_ma50", "proximity_above") \\
             .eq("sector", "Technology") \\
-            .select("ticker", "sector", "trend_distance_ma50") \\
+            .select("ticker", "sector", "trend_distance_ma50", "fundamentals_free_cash_flow") \\
             .sort("extremes_condition_percentile", "asc") \\
             .limit(10) \\
             .execute()
@@ -275,15 +275,18 @@ class TickerDB:
             end: Range end date (``YYYY-MM-DD``). Use with ``start``.
             fields: Optional list of summary fields to return. Supports
                 sections like ``"trend"`` and dotted paths like
-                ``"trend.direction"`` or ``"momentum.rsi_zone"``.
+                ``"trend.direction"``, ``"momentum.rsi_zone"``, or
+                ``"fundamentals.free_cash_flow"``.
             meta: Snapshot and history modes only. Set ``True`` to include
                 sibling ``_meta`` / ``status_meta`` stability objects.
                 Explicit ``*_meta`` field paths still work without this flag.
             sample: Date range mode only. Use ``"even"`` to evenly sample
                 snapshots across the full ``start``/``end`` span.
             field: Band field name for event queries (e.g.
-                ``"momentum_rsi_zone"``, ``"pattern_bull_flag"``, or
-                ``"trend_distance_ma50"``).
+                ``"momentum_rsi_zone"``, ``"pattern_bull_flag"``,
+                ``"pattern_ascending_triangle"``, or
+                ``"trend_distance_ma50"``, or
+                ``"fundamentals_free_cash_flow"``).
             band: Filter to a specific band value (e.g. ``"deep_oversold"``).
                 MA distance event fields also support grouped aliases
                 ``"above"`` and ``"below"``.
@@ -359,7 +362,12 @@ class TickerDB:
                 trend_ma_compression_band, trend_ma_crossover_event, momentum_rsi_zone,
                 extremes_condition, extremes_condition_rarity, volatility_regime,
                 volume_ratio_band, pattern_bull_flag, pattern_bear_flag,
+                pattern_ascending_triangle, pattern_descending_triangle,
+                pattern_symmetrical_triangle, pattern_rising_wedge,
+                pattern_falling_wedge,
                 fundamentals_valuation_zone, range_position.
+                Request fundamentals_free_cash_flow explicitly for the stock-only
+                free cash flow burn/surplus band.
                 Request ma8 through ma200 for raw MA values.
                 Request trend_ma8_slope through trend_ma200_slope for the full MA
                 slope set.
@@ -394,7 +402,7 @@ class TickerDB:
             results = client.query() \\
                 .eq("trend_distance_ma50", "proximity_above") \\
                 .eq("sector", "Technology") \\
-                .select("ticker", "sector", "trend_distance_ma50") \\
+                .select("ticker", "sector", "trend_distance_ma50", "fundamentals_free_cash_flow") \\
                 .sort("extremes_condition_percentile", "asc") \\
                 .limit(10) \\
                 .execute()

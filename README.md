@@ -62,7 +62,7 @@ result = client.summary("AAPL", timeframe="weekly")
 result = client.summary("AAPL", date="2025-01-15")
 ```
 
-Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, same-candle `ohlcv.open/high/low/close/volume`, richer `volume` fields such as `price_direction_on_volume`, raw support/resistance prices such as `support_level.level_price`, optional level metadata such as `support_level.status_meta` when requested, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only nested `fundamentals.insider_activity` when available.
+Summary payloads are intentionally forward-compatible. Current snapshots include top-level freshness like `as_of_date`, same-candle `ohlcv.open/high/low/close/volume`, richer `volume` fields such as `price_direction_on_volume`, raw support/resistance prices such as `support_level.level_price`, optional level metadata such as `support_level.status_meta` when requested, Pro `sector_context` fields like `agreement` and `overbought_count`, and stock-only fundamentals such as `fundamentals.free_cash_flow` and nested `fundamentals.insider_activity` when available.
 
 Summary stays band-first by default, so sibling `_meta` / `status_meta` stability objects are omitted unless you opt in:
 
@@ -70,7 +70,7 @@ Summary stays band-first by default, so sibling `_meta` / `status_meta` stabilit
 result = client.summary("AAPL", meta=True)
 result = client.summary(
     "AAPL",
-    fields=["trend.direction", "trend.direction_meta"],
+    fields=["trend.direction", "trend.direction_meta", "fundamentals.free_cash_flow"],
 )
 ```
 
@@ -116,6 +116,7 @@ Query event occurrences for a specific band field.
 ```python
 result = client.summary("AAPL", field="momentum_rsi_zone", band="deep_oversold")
 result = client.summary("AAPL", field="extremes_condition", band="deep_oversold")
+result = client.summary("AAPL", field="fundamentals_free_cash_flow", band="moderate_surplus")
 result = client.summary("BTCUSD", field="trend_distance_ma50", band="above")
 result = client.summary(
     "BTCUSD",
@@ -207,8 +208,9 @@ The SDK includes a fluent query builder for searching assets by categorical stat
 
 ```python
 results = client.query() \
-    .select('ticker', 'sector', 'trend_distance_ma50', 'momentum_rsi_zone') \
+    .select('ticker', 'sector', 'trend_distance_ma50', 'momentum_rsi_zone', 'fundamentals_free_cash_flow') \
     .eq('trend_distance_ma50', 'proximity_above') \
+    .eq('fundamentals_free_cash_flow', 'moderate_surplus') \
     .eq('sector', 'Technology') \
     .sort('extremes_condition_percentile', 'asc') \
     .limit(10) \
