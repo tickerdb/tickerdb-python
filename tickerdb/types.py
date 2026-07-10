@@ -114,6 +114,7 @@ class SearchParams(TypedDict, total=False):
 
     filters: List[SearchFilter]
     timeframe: Timeframe
+    date: str
     limit: int
     offset: int
     fields: List[str]

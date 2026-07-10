@@ -109,6 +109,7 @@ class SearchQuery:
         self._limit: Optional[int] = None
         self._offset: Optional[int] = None
         self._timeframe: Optional[str] = None
+        self._date: Optional[str] = None
 
     def eq(self, field: str, value: Any) -> "SearchQuery":
         self._filters.append({"field": field, "op": "eq", "value": value})
@@ -159,6 +160,10 @@ class SearchQuery:
         self._timeframe = tf
         return self
 
+    def date(self, d: str) -> "SearchQuery":
+        self._date = d
+        return self
+
     def execute(self) -> Dict[str, Any]:
         """Execute the built query and return results."""
         return self._client.search(
@@ -169,6 +174,7 @@ class SearchQuery:
             limit=self._limit,
             offset=self._offset,
             timeframe=self._timeframe,
+            date=self._date,
         )
 
 
@@ -254,6 +260,7 @@ class TickerDB:
         field: Optional[str] = None,
         band: Optional[str] = None,
         limit: Optional[int] = None,
+        offset: Optional[int] = None,
         before: Optional[str] = None,
         after: Optional[str] = None,
         stats: Optional[bool] = None,
@@ -297,6 +304,7 @@ class TickerDB:
             limit: For event mode, max results (1-50), returned newest-first
                 by default. For ``sample="even"``
                 date ranges, requested sampled rows capped by plan.
+            offset: Pagination offset for history/sample date-range modes.
             before: Return events before this date (``YYYY-MM-DD``).
             after: Return events after this date (``YYYY-MM-DD``).
             stats: Event mode only. Set ``True`` to return aggregate stats
@@ -320,6 +328,7 @@ class TickerDB:
             "field": field,
             "band": band,
             "limit": limit,
+            "offset": offset,
             "before": before,
             "after": after,
             "stats": "true" if stats else None,
@@ -343,6 +352,7 @@ class TickerDB:
         *,
         filters: Optional[List[Dict[str, Any]]] = None,
         timeframe: Optional[str] = None,
+        date: Optional[str] = None,
         limit: Optional[int] = None,
         offset: Optional[int] = None,
         fields: Optional[List[str]] = None,
@@ -357,6 +367,8 @@ class TickerDB:
                 Canonical field names come from ``/v1/schema/fields`` and use
                 flat snake_case.
             timeframe: ``"daily"`` or ``"weekly"``.
+            date: Point-in-time snapshot date (``YYYY-MM-DD``) to search
+                against. History depth is capped by your plan.
             limit: Max results to return.
             offset: Pagination offset.
             fields: List of column names to return (e.g.
@@ -387,6 +399,7 @@ class TickerDB:
 
         params: Dict[str, Any] = {
             "timeframe": timeframe,
+            "date": date,
             "limit": limit,
             "offset": offset,
             "sort_by": sort_by,
