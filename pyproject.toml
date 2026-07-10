@@ -3,7 +3,10 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.version]
-path = "tickerdb/_version.py"
+path = "src/tickerdb/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tickerdb"]
 
 [project]
 name = "tickerdb"
