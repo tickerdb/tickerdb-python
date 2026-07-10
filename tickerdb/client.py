@@ -8,6 +8,7 @@ from .exceptions import (
     AuthenticationError,
     DataUnavailableError,
     ForbiddenError,
+    InsufficientCreditsError,
     NotFoundError,
     RateLimitError,
     TickerDBError,
@@ -71,13 +72,16 @@ def _raise_for_status(response: httpx.Response) -> None:
         raw=body,
     )
 
-    error_cls = {
-        401: AuthenticationError,
-        403: ForbiddenError,
-        404: NotFoundError,
-        429: RateLimitError,
-        503: DataUnavailableError,
-    }.get(response.status_code, TickerDBError)
+    if response.status_code == 429 and error_type == "insufficient_credits":
+        error_cls: Any = InsufficientCreditsError
+    else:
+        error_cls = {
+            401: AuthenticationError,
+            403: ForbiddenError,
+            404: NotFoundError,
+            429: RateLimitError,
+            503: DataUnavailableError,
+        }.get(response.status_code, TickerDBError)
 
     raise error_cls(**kwargs)
 
@@ -433,6 +437,88 @@ class TickerDB:
             ``credit_balance``), ``scheduled_tier``, and ``scheduled_change_at``.
         """
         return self._request("GET", "/account")
+
+    def ohlcv(
+        self,
+        ticker: str,
+        *,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+        cursor: Optional[str] = None,
+        order: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Get daily OHLCV bars for a ticker.
+
+        Bars are split/dividend-adjusted for equities and unadjusted for
+        crypto. History depth is capped by your plan (``history_days``). This
+        endpoint is **credit-metered**: 100 bars per credit (minimum 1). A
+        request that would exceed your credit balance raises
+        :class:`~tickerdb.InsufficientCreditsError`.
+
+        Results are cursor-paginated. Follow ``next_cursor`` while
+        ``has_more`` is true, or use :meth:`iter_ohlcv` to stream every bar.
+
+        Args:
+            ticker: Asset ticker symbol (e.g. ``"AAPL"``).
+            start: Range start date (``YYYY-MM-DD``).
+            end: Range end date (``YYYY-MM-DD``).
+            cursor: Pagination cursor (a date) from a prior ``next_cursor``.
+            order: ``"asc"`` or ``"desc"`` (default ``"desc"``).
+            limit: Bars per page (1-1000, default 100).
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        params: Dict[str, Any] = {
+            "start": start,
+            "end": end,
+            "cursor": cursor,
+            "order": order,
+            "limit": limit,
+        }
+        return self._request("GET", f"/ohlcv/{ticker}", params=params)
+
+    def iter_ohlcv(
+        self,
+        ticker: str,
+        *,
+        start: Optional[str] = None,
+        end: Optional[str] = None,
+        order: Optional[str] = None,
+        page_size: Optional[int] = None,
+    ):
+        """Yield OHLCV bars across all pages, auto-following the cursor.
+
+        Each item is a single bar dict (``date``, ``open``, ``high``, ``low``,
+        ``close``, ``volume``). Note that each page is a separate credit-metered
+        request.
+
+        Args:
+            ticker: Asset ticker symbol (e.g. ``"AAPL"``).
+            start: Range start date (``YYYY-MM-DD``).
+            end: Range end date (``YYYY-MM-DD``).
+            order: ``"asc"`` or ``"desc"`` (default ``"desc"``).
+            page_size: Bars per underlying request (1-1000, default 100).
+
+        Yields:
+            Individual OHLCV bar dicts.
+        """
+        cursor: Optional[str] = None
+        while True:
+            data = self.ohlcv(
+                ticker,
+                start=start,
+                end=end,
+                cursor=cursor,
+                order=order,
+                limit=page_size,
+            )["data"]
+            for bar in data.get("bars", []):
+                yield bar
+            cursor = data.get("next_cursor")
+            if not data.get("has_more") or not cursor:
+                break
 
     def watchlist(
         self,
