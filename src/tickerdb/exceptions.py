@@ -2,6 +2,16 @@
 
 from typing import Any, Dict, Optional
 
+__all__ = [
+    "TickerDBError",
+    "AuthenticationError",
+    "ForbiddenError",
+    "NotFoundError",
+    "RateLimitError",
+    "InsufficientCreditsError",
+    "DataUnavailableError",
+]
+
 
 class TickerDBError(Exception):
     """Raised when the TickerDB returns an error response.
@@ -47,6 +57,24 @@ class NotFoundError(TickerDBError):
 
 class RateLimitError(TickerDBError):
     """Raised on 429 responses (rate limit exceeded)."""
+
+
+class InsufficientCreditsError(RateLimitError):
+    """Raised on 429 responses from credit-metered endpoints (e.g. OHLCV).
+
+    Subclasses :class:`RateLimitError`, so existing ``except RateLimitError``
+    handlers still catch it.
+
+    Attributes:
+        credits_required: Credits the request would have cost.
+        credits_remaining: Credits currently available on the account.
+    """
+
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        super().__init__(*args, **kwargs)
+        error = self.raw.get("error", {}) if isinstance(self.raw, dict) else {}
+        self.credits_required: Optional[int] = error.get("credits_required")
+        self.credits_remaining: Optional[int] = error.get("credits_remaining")
 
 
 class DataUnavailableError(TickerDBError):
