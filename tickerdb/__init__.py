@@ -46,6 +46,11 @@ from .types import (
     SearchParams,
     SearchResponse,
     Stability,
+    Team,
+    TeamInvite,
+    TeamMember,
+    TeamPendingInvite,
+    TeamsResponse,
     WebhookDeliveriesResponse,
     WebhookDelivery,
 )
@@ -81,6 +86,11 @@ __all__ = [
     "SearchParams",
     "SearchResponse",
     "Stability",
+    "Team",
+    "TeamInvite",
+    "TeamMember",
+    "TeamPendingInvite",
+    "TeamsResponse",
     "WebhookDeliveriesResponse",
     "WebhookDelivery",
 ]
