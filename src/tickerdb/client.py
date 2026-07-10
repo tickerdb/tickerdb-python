@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from . import _endpoints as endpoints
 from ._transport import (
     DEFAULT_BASE_URL,
     DEFAULT_TIMEOUT,
@@ -241,35 +242,26 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        import json as _json
-
-        params: Dict[str, Any] = {
-            "timeframe": timeframe,
-            "date": date,
-            "start": start,
-            "end": end,
-            "sample": sample,
-            "field": field,
-            "band": band,
-            "limit": limit,
-            "offset": offset,
-            "before": before,
-            "after": after,
-            "stats": "true" if stats else None,
-            "context_ticker": context_ticker,
-            "context_field": context_field,
-            "context_band": context_band,
-        }
-        if fields is not None:
-            params["fields"] = _json.dumps(fields)
-        if meta is not None:
-            params["meta"] = "true" if meta else "false"
-
-        return self._request(
-            "GET",
-            f"/summary/{ticker}",
-            params=params,
-        )
+        return self._send(endpoints.summary(
+            ticker,
+            timeframe=timeframe,
+            date=date,
+            start=start,
+            end=end,
+            fields=fields,
+            meta=meta,
+            sample=sample,
+            field=field,
+            band=band,
+            limit=limit,
+            offset=offset,
+            before=before,
+            after=after,
+            stats=stats,
+            context_ticker=context_ticker,
+            context_field=context_field,
+            context_band=context_band,
+        ))
 
     def search(
         self,
@@ -319,21 +311,16 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        import json as _json
-
-        params: Dict[str, Any] = {
-            "timeframe": timeframe,
-            "date": date,
-            "limit": limit,
-            "offset": offset,
-            "sort_by": sort_by,
-            "sort_direction": sort_direction,
-        }
-        if filters is not None:
-            params["filters"] = _json.dumps(filters)
-        if fields is not None:
-            params["fields"] = _json.dumps(fields)
-        return self._request("GET", "/search", params=params)
+        return self._send(endpoints.search(
+            filters=filters,
+            timeframe=timeframe,
+            date=date,
+            limit=limit,
+            offset=offset,
+            fields=fields,
+            sort_by=sort_by,
+            sort_direction=sort_direction,
+        ))
 
     def query(self) -> SearchQuery:
         """Create a fluent query builder for the search endpoint.
@@ -359,7 +346,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request("GET", "/schema/fields")
+        return self._send(endpoints.schema())
 
     def account(self) -> Dict[str, Any]:
         """Get the authenticated account's tier, limits, usage, and credits.
@@ -373,7 +360,7 @@ class TickerDB:
             ``usage`` (``monthly_requests_used``, ``monthly_requests_remaining``,
             ``credit_balance``), ``scheduled_tier``, and ``scheduled_change_at``.
         """
-        return self._request("GET", "/account")
+        return self._send(endpoints.account())
 
     def ohlcv(
         self,
@@ -407,14 +394,9 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        params: Dict[str, Any] = {
-            "start": start,
-            "end": end,
-            "cursor": cursor,
-            "order": order,
-            "limit": limit,
-        }
-        return self._request("GET", f"/ohlcv/{ticker}", params=params)
+        return self._send(endpoints.ohlcv(
+            ticker, start=start, end=end, cursor=cursor, order=order, limit=limit,
+        ))
 
     def iter_ohlcv(
         self,
@@ -470,10 +452,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        params: Dict[str, str] = {}
-        if date is not None:
-            params["date"] = date
-        return self._request("GET", "/watchlist", params=params)
+        return self._send(endpoints.watchlist(date=date))
 
     def add_to_watchlist(
         self,
@@ -487,11 +466,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request(
-            "POST",
-            "/watchlist",
-            json={"tickers": [str(t).strip().upper() for t in tickers]},
-        )
+        return self._send(endpoints.add_to_watchlist(tickers))
 
     def remove_from_watchlist(
         self,
@@ -505,11 +480,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request(
-            "DELETE",
-            "/watchlist",
-            json={"tickers": [str(t).strip().upper() for t in tickers]},
-        )
+        return self._send(endpoints.remove_from_watchlist(tickers))
 
     def watchlist_changes(
         self,
@@ -528,10 +499,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        params: Dict[str, str] = {}
-        if timeframe is not None:
-            params["timeframe"] = timeframe
-        return self._request("GET", "/watchlist/changes", params=params)
+        return self._send(endpoints.watchlist_changes(timeframe=timeframe))
 
     # ------------------------------------------------------------------
     # Screeners
@@ -545,7 +513,7 @@ class TickerDB:
             ``defaults``, ``saved``, ``screeners`` (both combined), and
             ``fields`` (the queryable field catalogue).
         """
-        return self._request("GET", "/screeners")
+        return self._send(endpoints.list_screeners())
 
     def create_screener(
         self,
@@ -573,16 +541,9 @@ class TickerDB:
             the created screener. ``return_fields`` are derived server-side
             from the filters and sort.
         """
-        body: Dict[str, Any] = {"filters": filters}
-        if name is not None:
-            body["name"] = name
-        if timeframe is not None:
-            body["timeframe"] = timeframe
-        if sort is not None:
-            body["sort"] = sort
-        if limit_count is not None:
-            body["limit_count"] = limit_count
-        return self._request("POST", "/screeners", json=body)
+        return self._send(endpoints.create_screener(
+            filters=filters, name=name, timeframe=timeframe, sort=sort, limit_count=limit_count,
+        ))
 
     def update_screener(
         self,
@@ -610,18 +571,9 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        body: Dict[str, Any] = {"id": id}
-        if filters is not None:
-            body["filters"] = filters
-        if name is not None:
-            body["name"] = name
-        if timeframe is not None:
-            body["timeframe"] = timeframe
-        if sort is not None:
-            body["sort"] = sort
-        if limit_count is not None:
-            body["limit_count"] = limit_count
-        return self._request("PUT", "/screeners", json=body)
+        return self._send(endpoints.update_screener(
+            id, filters=filters, name=name, timeframe=timeframe, sort=sort, limit_count=limit_count,
+        ))
 
     def delete_screener(
         self,
@@ -639,7 +591,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request("DELETE", "/screeners", json={"id": id, "kind": kind})
+        return self._send(endpoints.delete_screener(id, kind=kind))
 
     # ------------------------------------------------------------------
     # Webhook management
@@ -651,7 +603,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request("GET", "/webhooks")
+        return self._send(endpoints.list_webhooks())
 
     def create_webhook(
         self,
@@ -667,10 +619,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        body: Dict[str, Any] = {"url": url}
-        if events is not None:
-            body["events"] = events
-        return self._request("POST", "/webhooks", json=body)
+        return self._send(endpoints.create_webhook(url, events))
 
     def update_webhook(
         self,
@@ -691,14 +640,9 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        body: Dict[str, Any] = {"id": id}
-        if url is not None:
-            body["url"] = url
-        if events is not None:
-            body["events"] = events
-        if active is not None:
-            body["active"] = active
-        return self._request("PUT", "/webhooks", json=body)
+        return self._send(endpoints.update_webhook(
+            id, url=url, events=events, active=active,
+        ))
 
     def delete_webhook(self, id: str) -> Dict[str, Any]:
         """Delete a webhook.
@@ -709,7 +653,7 @@ class TickerDB:
         Returns:
             Dict with ``data`` and ``rate_limits`` keys.
         """
-        return self._request("DELETE", "/webhooks", json={"id": id})
+        return self._send(endpoints.delete_webhook(id))
 
     def webhook_deliveries(
         self,
@@ -730,11 +674,9 @@ class TickerDB:
             ``http_status``, ``error``, timestamps, etc.), ``count``, and
             ``limit``.
         """
-        params: Dict[str, Any] = {
-            "webhook_id": webhook_id,
-            "limit": limit,
-        }
-        return self._request("GET", "/webhooks/deliveries", params=params)
+        return self._send(endpoints.webhook_deliveries(
+            webhook_id=webhook_id, limit=limit,
+        ))
 
     # ------------------------------------------------------------------
     # Team management
@@ -747,13 +689,11 @@ class TickerDB:
             Dict with ``data`` and ``rate_limits`` keys. ``data`` contains
             ``teams`` and ``my_pending_invites``.
         """
-        return self._request("GET", "/team")
+        return self._send(endpoints.get_teams())
 
     def _team_action(self, action: str, **body: Any) -> Dict[str, Any]:
         """POST an action to the team endpoint, dropping ``None`` values."""
-        payload: Dict[str, Any] = {"action": action}
-        payload.update({k: v for k, v in body.items() if v is not None})
-        return self._request("POST", "/team", json=payload)
+        return self._send(endpoints.team_action(action, **body))
 
     def create_team(self, name: str) -> Dict[str, Any]:
         """Create a team (requires a business plan).
