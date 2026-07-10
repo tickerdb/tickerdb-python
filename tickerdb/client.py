@@ -774,6 +774,31 @@ class TickerDB:
         """
         return self._request("DELETE", "/webhooks", json={"id": id})
 
+    def webhook_deliveries(
+        self,
+        *,
+        webhook_id: Optional[str] = None,
+        limit: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Get recent webhook delivery attempts (status, retries, errors).
+
+        Args:
+            webhook_id: Only return deliveries for this webhook. Omit to
+                return deliveries across all of your webhooks.
+            limit: Max records to return (default 50, max 200).
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys. ``data`` contains
+            ``deliveries`` (each with ``status``, ``attempt_count``,
+            ``http_status``, ``error``, timestamps, etc.), ``count``, and
+            ``limit``.
+        """
+        params: Dict[str, Any] = {
+            "webhook_id": webhook_id,
+            "limit": limit,
+        }
+        return self._request("GET", "/webhooks/deliveries", params=params)
+
     # ------------------------------------------------------------------
     # Context manager support
     # ------------------------------------------------------------------

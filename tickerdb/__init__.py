@@ -46,6 +46,8 @@ from .types import (
     SearchParams,
     SearchResponse,
     Stability,
+    WebhookDeliveriesResponse,
+    WebhookDelivery,
 )
 
 __all__ = [
@@ -79,6 +81,8 @@ __all__ = [
     "SearchParams",
     "SearchResponse",
     "Stability",
+    "WebhookDeliveriesResponse",
+    "WebhookDelivery",
 ]
 
 __version__ = "0.1.0"
