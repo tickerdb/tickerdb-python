@@ -9,6 +9,7 @@ Connect your agent to pre-computed market context that improves reasoning and re
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
+- Covers the full v1 API: summaries, search, screeners, OHLCV, watchlists, webhooks, and teams
 
 **Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
@@ -358,6 +359,33 @@ print(limits["requests_remaining"])      # Requests remaining
 print(limits["request_reset"])           # Reset timestamp
 print(limits["hourly_request_limit"])    # Hourly limit
 print(limits["hourly_requests_remaining"])  # Hourly remaining
+```
+
+## Development
+
+Requires Python 3.8+.
+
+```bash
+git clone https://github.com/tickerdb/tickerdb-python
+cd tickerdb-python
+
+python -m venv .venv
+source .venv/bin/activate          # Windows (PowerShell): .venv\Scripts\Activate.ps1
+
+pip install -e ".[dev]"            # editable install + dev tools
+```
+
+Run the checks (no API key required — the suite uses a mocked transport):
+
+```bash
+pytest
+ruff check src tests
+```
+
+`examples/smoke_test.py` runs a read-only check against the live API using your key:
+
+```bash
+TICKERDB_API_KEY=tdb_your_key python examples/smoke_test.py
 ```
 
 ## Links
