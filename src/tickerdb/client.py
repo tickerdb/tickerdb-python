@@ -224,15 +224,9 @@ class TickerDB:
     def query(self) -> SearchQuery:
         """Create a fluent query builder for the search endpoint.
 
-        Usage::
-
-            results = client.query() \\
-                .eq("trend_distance_ma50", "proximity_above") \\
-                .eq("sector", "Technology") \\
-                .select("ticker", "sector", "trend_distance_ma50", "fundamentals_free_cash_flow") \\
-                .sort("extremes_condition_percentile", "asc") \\
-                .limit(10) \\
-                .execute()
+        See :class:`SearchQuery` (and its base
+        :class:`tickerdb.query.BaseSearchQuery`) for the chainable methods and
+        a usage example.
 
         Returns:
             A :class:`SearchQuery` builder instance.
