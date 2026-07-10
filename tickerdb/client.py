@@ -597,6 +597,114 @@ class TickerDB:
         return self._request("GET", "/watchlist/changes", params=params)
 
     # ------------------------------------------------------------------
+    # Screeners
+    # ------------------------------------------------------------------
+
+    def list_screeners(self) -> Dict[str, Any]:
+        """List saved (custom) and built-in (default) screeners.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys. ``data`` contains
+            ``defaults``, ``saved``, ``screeners`` (both combined), and
+            ``fields`` (the queryable field catalogue).
+        """
+        return self._request("GET", "/screeners")
+
+    def create_screener(
+        self,
+        *,
+        filters: List[Dict[str, Any]],
+        name: Optional[str] = None,
+        timeframe: Optional[str] = None,
+        sort: Optional[Dict[str, Any]] = None,
+        limit_count: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Create a saved custom screener.
+
+        Args:
+            filters: List of filter objects (up to 12). Value filters use
+                ``{"field", "op", "value"}`` with ``op`` in
+                ``eq/neq/in/gt/gte/lt/lte/exists``. Change filters use
+                ``{"type": "change", "field", "from", "to"}``.
+            name: Optional display name (derived from filters if omitted).
+            timeframe: ``"daily"`` or ``"weekly"`` (default ``"daily"``).
+            sort: Optional ``{"field", "direction"}`` sort object.
+            limit_count: Result cap when the screener is run (1-50).
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys. ``data.screener`` is
+            the created screener. ``return_fields`` are derived server-side
+            from the filters and sort.
+        """
+        body: Dict[str, Any] = {"filters": filters}
+        if name is not None:
+            body["name"] = name
+        if timeframe is not None:
+            body["timeframe"] = timeframe
+        if sort is not None:
+            body["sort"] = sort
+        if limit_count is not None:
+            body["limit_count"] = limit_count
+        return self._request("POST", "/screeners", json=body)
+
+    def update_screener(
+        self,
+        id: str,
+        *,
+        filters: Optional[List[Dict[str, Any]]] = None,
+        name: Optional[str] = None,
+        timeframe: Optional[str] = None,
+        sort: Optional[Dict[str, Any]] = None,
+        limit_count: Optional[int] = None,
+    ) -> Dict[str, Any]:
+        """Update a saved custom screener.
+
+        Only the provided fields are changed; omitted fields keep their
+        current value.
+
+        Args:
+            id: The screener ID.
+            filters: Replacement filter list (see :meth:`create_screener`).
+            name: New display name.
+            timeframe: ``"daily"`` or ``"weekly"``.
+            sort: Replacement ``{"field", "direction"}`` sort object.
+            limit_count: Result cap when the screener is run (1-50).
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        body: Dict[str, Any] = {"id": id}
+        if filters is not None:
+            body["filters"] = filters
+        if name is not None:
+            body["name"] = name
+        if timeframe is not None:
+            body["timeframe"] = timeframe
+        if sort is not None:
+            body["sort"] = sort
+        if limit_count is not None:
+            body["limit_count"] = limit_count
+        return self._request("PUT", "/screeners", json=body)
+
+    def delete_screener(
+        self,
+        id: str,
+        *,
+        kind: str = "custom",
+    ) -> Dict[str, Any]:
+        """Delete a custom screener or hide a built-in default screener.
+
+        Args:
+            id: The screener ID.
+            kind: ``"custom"`` to delete a saved screener (default), or
+                ``"default"`` to hide a built-in screener from your account.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys.
+        """
+        return self._request("DELETE", "/screeners", json={"id": id, "kind": kind})
+
+    # ------------------------------------------------------------------
     # Webhook management
     # ------------------------------------------------------------------
 
