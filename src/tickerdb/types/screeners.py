@@ -1,8 +1,8 @@
 """Screener types."""
 
-from typing import Any, List, Optional
+from typing import Any, List, Literal, Optional, TypedDict
 
-from .common import Literal, Timeframe, TypedDict
+from .common import Timeframe
 from .search import SchemaField
 
 __all__ = [

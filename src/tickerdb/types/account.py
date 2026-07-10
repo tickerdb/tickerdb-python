@@ -1,8 +1,6 @@
 """Account endpoint types."""
 
-from typing import Optional
-
-from .common import TypedDict
+from typing import Optional, TypedDict
 
 __all__ = ["AccountLimits", "AccountUsage", "AccountResponse"]
 

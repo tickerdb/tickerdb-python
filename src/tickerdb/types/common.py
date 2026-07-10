@@ -1,21 +1,8 @@
-"""Common shared types and the typing-compatibility shim.
+"""Common shared types used across the SDK."""
 
-The ``Literal`` / ``TypedDict`` imports here are re-exported so the other
-``types`` submodules can import them from one place instead of repeating the
-version check.
-"""
-
-import sys
-from typing import Any, Optional
-
-if sys.version_info >= (3, 8):
-    from typing import Literal, TypedDict
-else:
-    from typing_extensions import Literal, TypedDict
+from typing import Any, Literal, Optional, TypedDict
 
 __all__ = [
-    "Literal",
-    "TypedDict",
     "Timeframe",
     "Stability",
     "RateLimits",

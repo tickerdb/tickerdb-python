@@ -1,8 +1,6 @@
 """Team types."""
 
-from typing import List, Optional
-
-from .common import Literal, TypedDict
+from typing import List, Literal, Optional, TypedDict
 
 __all__ = [
     "TeamRole",

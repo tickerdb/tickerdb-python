@@ -1,8 +1,8 @@
 """Summary and events response types."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, TypedDict
 
-from .common import Stability, Timeframe, TypedDict
+from .common import Stability, Timeframe
 
 __all__ = ["BandMeta", "Event", "EventsContext", "EventsResponse"]
 

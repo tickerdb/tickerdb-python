@@ -76,17 +76,6 @@ class TickerDB:
         raise_for_status(response)
         return build_envelope(response)
 
-    def _request(
-        self,
-        method: str,
-        path: str,
-        *,
-        params: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """Thin shim over :meth:`_send` (kept while methods are migrated)."""
-        return self._send(RequestSpec(method, path, params=params, json=json))
-
     # ------------------------------------------------------------------
     # Public API methods
     # ------------------------------------------------------------------
@@ -207,23 +196,13 @@ class TickerDB:
                 against. History depth is capped by your plan.
             limit: Max results to return.
             offset: Pagination offset.
-            fields: List of column names to return (e.g.
-                ``["ticker", "sector", "momentum_rsi_zone"]``).
-                Use ``["*"]`` for all 120+ fields. Default if omitted: ticker,
-                asset_class, sector, performance, trend_direction, trend_ma20_slope,
-                trend_ma_compression_band, trend_ma_crossover_event, momentum_rsi_zone,
-                extremes_condition, extremes_condition_rarity, volatility_regime,
-                volume_ratio_band, pattern_bull_flag, pattern_bear_flag,
-                pattern_ascending_triangle, pattern_descending_triangle,
-                pattern_symmetrical_triangle, pattern_rising_wedge,
-                pattern_falling_wedge,
-                fundamentals_valuation_zone, range_position.
-                Request fundamentals_free_cash_flow explicitly for the stock-only
-                free cash flow burn/surplus band.
-                Request ma8 through ma200 for raw MA values.
-                Request trend_ma8_slope through trend_ma200_slope for the full MA
-                slope set.
-                ``ticker`` is always included.
+            fields: Column names to return (e.g.
+                ``["ticker", "sector", "momentum_rsi_zone"]``); ``ticker`` is
+                always included. Use ``["*"]`` for every field, or omit for a
+                sensible default set. See ``/v1/schema/fields`` (or
+                :meth:`schema`) for the full catalogue, including raw MA values
+                (``ma8``-``ma200``), per-MA slopes, and
+                ``fundamentals_free_cash_flow``.
             sort_by: Column name to sort results by. Must be a valid field
                 from the schema.
             sort_direction: ``"asc"`` or ``"desc"`` (default ``"desc"``).

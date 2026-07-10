@@ -1,8 +1,8 @@
 """Search and schema types."""
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional, TypedDict
 
-from .common import Literal, Timeframe, TypedDict
+from .common import Timeframe
 
 __all__ = [
     "SearchOperator",

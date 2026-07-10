@@ -79,17 +79,6 @@ class AsyncTickerDB:
         raise_for_status(response)
         return build_envelope(response)
 
-    async def _request(
-        self,
-        method: str,
-        path: str,
-        *,
-        params: Optional[Dict[str, Any]] = None,
-        json: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        """Thin shim over :meth:`_send` (kept while methods are migrated)."""
-        return await self._send(RequestSpec(method, path, params=params, json=json))
-
     # ------------------------------------------------------------------
     # Public API methods
     # ------------------------------------------------------------------

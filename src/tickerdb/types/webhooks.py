@@ -1,8 +1,6 @@
 """Webhook types."""
 
-from typing import Dict, List, Optional
-
-from .common import TypedDict
+from typing import Dict, List, Optional, TypedDict
 
 __all__ = ["WebhookEvents", "WebhookDelivery", "WebhookDeliveriesResponse"]
 
