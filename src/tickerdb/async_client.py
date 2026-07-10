@@ -14,98 +14,18 @@ from ._transport import (
     default_headers,
     raise_for_status,
 )
+from .query import BaseSearchQuery
 
 
-class AsyncSearchQuery:
-    """Fluent query builder for the async search endpoint.
+class AsyncSearchQuery(BaseSearchQuery):
+    """Asynchronous fluent query builder for the search endpoint.
 
-    Usage::
-
-        results = await client.query() \\
-            .eq("trend_distance_ma50", "proximity_above") \\
-            .eq("sector", "Technology") \\
-            .select("ticker", "sector", "trend_distance_ma50", "fundamentals_free_cash_flow") \\
-            .sort("extremes_condition_percentile", "asc") \\
-            .limit(10) \\
-            .execute()
+    See :class:`tickerdb.query.BaseSearchQuery` for the builder methods.
     """
-
-    def __init__(self, client: "AsyncTickerDB") -> None:
-        self._client = client
-        self._filters: list = []
-        self._fields: Optional[List[str]] = None
-        self._sort_by: Optional[str] = None
-        self._sort_direction: Optional[str] = None
-        self._limit: Optional[int] = None
-        self._offset: Optional[int] = None
-        self._timeframe: Optional[str] = None
-        self._date: Optional[str] = None
-
-    def eq(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "eq", "value": value})
-        return self
-
-    def neq(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "neq", "value": value})
-        return self
-
-    def in_(self, field: str, values: list) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "in", "value": values})
-        return self
-
-    def gt(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "gt", "value": value})
-        return self
-
-    def gte(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "gte", "value": value})
-        return self
-
-    def lt(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "lt", "value": value})
-        return self
-
-    def lte(self, field: str, value: Any) -> "AsyncSearchQuery":
-        self._filters.append({"field": field, "op": "lte", "value": value})
-        return self
-
-    def select(self, *fields: str) -> "AsyncSearchQuery":
-        self._fields = list(fields)
-        return self
-
-    def sort(self, field: str, direction: str = "desc") -> "AsyncSearchQuery":
-        self._sort_by = field
-        self._sort_direction = direction
-        return self
-
-    def limit(self, n: int) -> "AsyncSearchQuery":
-        self._limit = n
-        return self
-
-    def offset(self, n: int) -> "AsyncSearchQuery":
-        self._offset = n
-        return self
-
-    def timeframe(self, tf: str) -> "AsyncSearchQuery":
-        self._timeframe = tf
-        return self
-
-    def date(self, d: str) -> "AsyncSearchQuery":
-        self._date = d
-        return self
 
     async def execute(self) -> Dict[str, Any]:
         """Execute the built query and return results."""
-        return await self._client.search(
-            filters=self._filters,
-            fields=self._fields,
-            sort_by=self._sort_by,
-            sort_direction=self._sort_direction,
-            limit=self._limit,
-            offset=self._offset,
-            timeframe=self._timeframe,
-            date=self._date,
-        )
+        return await self._client.search(**self._search_kwargs())
 
 
 class AsyncTickerDB:
