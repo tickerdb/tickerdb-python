@@ -420,6 +420,20 @@ class TickerDB:
         """
         return self._request("GET", "/schema/fields")
 
+    def account(self) -> Dict[str, Any]:
+        """Get the authenticated account's tier, limits, usage, and credits.
+
+        This is a metadata call and does **not** consume your monthly request
+        quota, so it is safe to poll before running a batch job.
+
+        Returns:
+            Dict with ``data`` and ``rate_limits`` keys. ``data`` contains
+            ``tier``, ``tier_full``, ``email``, ``limits`` (plan caps),
+            ``usage`` (``monthly_requests_used``, ``monthly_requests_remaining``,
+            ``credit_balance``), ``scheduled_tier``, and ``scheduled_change_at``.
+        """
+        return self._request("GET", "/account")
+
     def watchlist(
         self,
         *,

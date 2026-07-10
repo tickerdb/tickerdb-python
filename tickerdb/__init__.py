@@ -26,6 +26,9 @@ from .exceptions import (
     TickerDBError,
 )
 from .types import (
+    AccountLimits,
+    AccountResponse,
+    AccountUsage,
     APIResponse,
     BandMeta,
     Event,
@@ -49,6 +52,9 @@ __all__ = [
     "NotFoundError",
     "RateLimitError",
     "DataUnavailableError",
+    "AccountLimits",
+    "AccountResponse",
+    "AccountUsage",
     "APIResponse",
     "BandMeta",
     "Event",
