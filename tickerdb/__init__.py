@@ -15,6 +15,7 @@ For async usage::
         result = await client.summary("AAPL")
 """
 
+from ._version import __version__
 from .async_client import AsyncSearchQuery, AsyncTickerDB
 from .client import SearchQuery, TickerDB
 from .exceptions import (
@@ -93,6 +94,5 @@ __all__ = [
     "TeamsResponse",
     "WebhookDeliveriesResponse",
     "WebhookDelivery",
+    "__version__",
 ]
-
-__version__ = "0.1.0"

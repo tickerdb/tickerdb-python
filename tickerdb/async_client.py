@@ -4,6 +4,7 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
+from ._version import __version__
 from .exceptions import (
     AuthenticationError,
     DataUnavailableError,
@@ -212,7 +213,7 @@ class AsyncTickerDB:
             headers={
                 "Authorization": f"Bearer {api_key}",
                 "Accept": "application/json",
-                "User-Agent": "tickerdb-python/0.1.0",
+                "User-Agent": f"tickerdb-python/{__version__}",
             },
             timeout=timeout,
             **httpx_kwargs,
