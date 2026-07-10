@@ -4,87 +4,14 @@ from typing import Any, Dict, List, Optional
 
 import httpx
 
-from ._version import __version__
-from .exceptions import (
-    AuthenticationError,
-    DataUnavailableError,
-    ForbiddenError,
-    InsufficientCreditsError,
-    NotFoundError,
-    RateLimitError,
-    TickerDBError,
+from ._transport import (
+    DEFAULT_BASE_URL,
+    DEFAULT_TIMEOUT,
+    build_envelope,
+    clean_params,
+    default_headers,
+    raise_for_status,
 )
-from .types import RateLimits
-
-_DEFAULT_BASE_URL = "https://api.tickerdb.com/v1"
-_DEFAULT_TIMEOUT = 30.0
-
-
-def _parse_rate_limits(headers: httpx.Headers) -> RateLimits:
-    """Extract rate-limit information from response headers."""
-
-    def _int_or_none(key: str) -> Optional[int]:
-        val = headers.get(key)
-        if val is None:
-            return None
-        try:
-            return int(val)
-        except (ValueError, TypeError):
-            return None
-
-    return RateLimits(
-        request_limit=_int_or_none("X-Request-Limit"),
-        requests_used=_int_or_none("X-Requests-Used"),
-        requests_remaining=_int_or_none("X-Requests-Remaining"),
-        request_reset=headers.get("X-Request-Reset"),
-        hourly_request_limit=_int_or_none("X-Hourly-Request-Limit"),
-        hourly_requests_used=_int_or_none("X-Hourly-Requests-Used"),
-        hourly_requests_remaining=_int_or_none("X-Hourly-Requests-Remaining"),
-        hourly_request_reset=headers.get("X-Hourly-Request-Reset"),
-    )
-
-
-def _raise_for_status(response: httpx.Response) -> None:
-    """Raise a typed TickerDBError if the response indicates an error."""
-    if response.status_code < 400:
-        return
-
-    try:
-        body = response.json()
-    except Exception:
-        raise TickerDBError(
-            status_code=response.status_code,
-            error_type="unknown_error",
-            message=response.text or "Unknown error",
-        )
-
-    error = body.get("error", {})
-    error_type = error.get("type", "unknown_error")
-    message = error.get("message", "Unknown error")
-    upgrade_url = error.get("upgrade_url")
-    reset = error.get("reset")
-
-    kwargs: Dict[str, Any] = dict(
-        status_code=response.status_code,
-        error_type=error_type,
-        message=message,
-        upgrade_url=upgrade_url,
-        reset=reset,
-        raw=body,
-    )
-
-    if response.status_code == 429 and error_type == "insufficient_credits":
-        error_cls: Any = InsufficientCreditsError
-    else:
-        error_cls = {
-            401: AuthenticationError,
-            403: ForbiddenError,
-            404: NotFoundError,
-            429: RateLimitError,
-            503: DataUnavailableError,
-        }.get(response.status_code, TickerDBError)
-
-    raise error_cls(**kwargs)
 
 
 class SearchQuery:
@@ -201,17 +128,13 @@ class TickerDB:
     def __init__(
         self,
         api_key: str,
-        base_url: str = _DEFAULT_BASE_URL,
-        timeout: float = _DEFAULT_TIMEOUT,
+        base_url: str = DEFAULT_BASE_URL,
+        timeout: float = DEFAULT_TIMEOUT,
         **httpx_kwargs: Any,
     ) -> None:
         self._base_url = base_url.rstrip("/")
         self._client = httpx.Client(
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Accept": "application/json",
-                "User-Agent": f"tickerdb-python/{__version__}",
-            },
+            headers=default_headers(api_key),
             timeout=timeout,
             **httpx_kwargs,
         )
@@ -230,18 +153,11 @@ class TickerDB:
     ) -> Dict[str, Any]:
         """Send a request and return parsed data + rate limits."""
         url = f"{self._base_url}{path}"
-
-        # Strip None values from params
-        if params:
-            params = {k: v for k, v in params.items() if v is not None}
-
-        response = self._client.request(method, url, params=params, json=json)
-        _raise_for_status(response)
-
-        data = response.json()
-        rate_limits = _parse_rate_limits(response.headers)
-
-        return {"data": data, "rate_limits": rate_limits}
+        response = self._client.request(
+            method, url, params=clean_params(params), json=json
+        )
+        raise_for_status(response)
+        return build_envelope(response)
 
     # ------------------------------------------------------------------
     # Public API methods
