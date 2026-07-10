@@ -7,6 +7,7 @@ import httpx
 from ._transport import (
     DEFAULT_BASE_URL,
     DEFAULT_TIMEOUT,
+    RequestSpec,
     build_envelope,
     clean_params,
     default_headers,
@@ -146,6 +147,17 @@ class AsyncTickerDB:
     # Internal helpers
     # ------------------------------------------------------------------
 
+    async def _send(self, spec: RequestSpec) -> Dict[str, Any]:
+        """Execute a request spec and return the response envelope."""
+        response = await self._client.request(
+            spec.method,
+            f"{self._base_url}{spec.path}",
+            params=clean_params(spec.params),
+            json=spec.json,
+        )
+        raise_for_status(response)
+        return build_envelope(response)
+
     async def _request(
         self,
         method: str,
@@ -154,13 +166,8 @@ class AsyncTickerDB:
         params: Optional[Dict[str, Any]] = None,
         json: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """Send a request and return parsed data + rate limits."""
-        url = f"{self._base_url}{path}"
-        response = await self._client.request(
-            method, url, params=clean_params(params), json=json
-        )
-        raise_for_status(response)
-        return build_envelope(response)
+        """Thin shim over :meth:`_send` (kept while methods are migrated)."""
+        return await self._send(RequestSpec(method, path, params=params, json=json))
 
     # ------------------------------------------------------------------
     # Public API methods
