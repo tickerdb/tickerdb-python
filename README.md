@@ -1,9 +1,9 @@
-# TickerDB - Market context for agents.
+# TickerDB - Pre-computed market data for agents.
 
 [![PyPI version](https://img.shields.io/pypi/v/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 [![Python versions](https://img.shields.io/pypi/pyversions/tickerdb.svg)](https://pypi.org/project/tickerdb/)
 
-Connect your agent to pre-computed market context that improves reasoning and reduces token usage.
+Connect your agent to hundreds of indicators like trend_direction, support_level, and analyst_consensus to improve reasoning and reduce token usage.
 
 - Sync and async clients
 - Full type hints for IDE autocompletion
