@@ -20,8 +20,6 @@ result shape is unchanged, so upgrading from 0.1.x is drop-in.
 - `ohlcv()` and `iter_ohlcv()` — daily OHLCV bars (split/dividend-adjusted for
   equities, unadjusted for crypto), cursor-paginated and credit-metered;
   `iter_ohlcv()` streams every bar across pages.
-- `webhook_deliveries()` — delivery history (status, retries, HTTP status,
-  errors).
 - Team management: `get_teams()`, `create_team()`, `invite_member()`,
   `remove_member()`, `cancel_invite()`, `resend_invite()`, `promote_member()`,
   `leave_team()`, `rename_team()`, `set_seats()`.

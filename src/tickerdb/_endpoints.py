@@ -152,53 +152,6 @@ def watchlist_changes(*, timeframe: Optional[str] = None) -> RequestSpec:
 
 
 # ---------------------------------------------------------------------------
-# Webhooks
-# ---------------------------------------------------------------------------
-
-
-def list_webhooks() -> RequestSpec:
-    return RequestSpec("GET", "/webhooks")
-
-
-def create_webhook(url: str, events: Optional[Dict[str, bool]] = None) -> RequestSpec:
-    body: Dict[str, Any] = {"url": url}
-    if events is not None:
-        body["events"] = events
-    return RequestSpec("POST", "/webhooks", json=body)
-
-
-def update_webhook(
-    id: str,
-    *,
-    url: Optional[str] = None,
-    events: Optional[Dict[str, bool]] = None,
-    active: Optional[bool] = None,
-) -> RequestSpec:
-    body: Dict[str, Any] = {"id": id}
-    if url is not None:
-        body["url"] = url
-    if events is not None:
-        body["events"] = events
-    if active is not None:
-        body["active"] = active
-    return RequestSpec("PUT", "/webhooks", json=body)
-
-
-def delete_webhook(id: str) -> RequestSpec:
-    return RequestSpec("DELETE", "/webhooks", json={"id": id})
-
-
-def webhook_deliveries(
-    *, webhook_id: Optional[str] = None, limit: Optional[int] = None
-) -> RequestSpec:
-    return RequestSpec(
-        "GET",
-        "/webhooks/deliveries",
-        params={"webhook_id": webhook_id, "limit": limit},
-    )
-
-
-# ---------------------------------------------------------------------------
 # Teams
 # ---------------------------------------------------------------------------
 

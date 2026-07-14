@@ -9,7 +9,7 @@ Connect your agent to hundreds of indicators like trend_direction, support_level
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
-- Covers the full v1 API: summaries, search, OHLCV, watchlists, webhooks, and teams
+- Covers the full v1 API: summaries, search, OHLCV, watchlists, and teams
 
 **Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
@@ -249,23 +249,6 @@ for bar in client.iter_ohlcv("AAPL", start="2025-01-01"):
 ```
 
 If a request would exceed your credit balance, `InsufficientCreditsError` is raised with `credits_required` and `credits_remaining` attributes.
-
-### Webhooks
-
-Manage webhooks and inspect their delivery history.
-
-```python
-hooks = client.list_webhooks()
-created = client.create_webhook("https://example.com/hook", events={"daily": True})
-webhook_id = created["data"]["id"]
-
-client.update_webhook(webhook_id, active=False)
-client.delete_webhook(webhook_id)
-
-# Recent delivery attempts (status, retries, HTTP status, errors)
-deliveries = client.webhook_deliveries(limit=20)
-deliveries = client.webhook_deliveries(webhook_id=webhook_id)
-```
 
 ### Teams
 

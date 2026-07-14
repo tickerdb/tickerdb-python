@@ -48,8 +48,6 @@ from .types import (
     TeamMember,
     TeamPendingInvite,
     TeamsResponse,
-    WebhookDeliveriesResponse,
-    WebhookDelivery,
 )
 
 __all__ = [
@@ -84,7 +82,5 @@ __all__ = [
     "TeamMember",
     "TeamPendingInvite",
     "TeamsResponse",
-    "WebhookDeliveriesResponse",
-    "WebhookDelivery",
     "__version__",
 ]

@@ -63,17 +63,6 @@ def test_watchlist_mutations_normalize_tickers():
     assert remove.json == {"tickers": ["TSLA"]}
 
 
-def test_update_webhook_only_provided_fields():
-    spec = endpoints.update_webhook("wh_1", active=False)
-    assert spec.json == {"id": "wh_1", "active": False}
-
-
-def test_webhook_deliveries_params():
-    spec = endpoints.webhook_deliveries(webhook_id="wh_1", limit=20)
-    assert spec.path == "/webhooks/deliveries"
-    assert spec.params == {"webhook_id": "wh_1", "limit": 20}
-
-
 def test_team_action_drops_none_and_sets_action():
     spec = endpoints.team_action("invite", team_id="t1", email="a@b.com", role=None)
     assert spec.method == "POST"
@@ -84,5 +73,4 @@ def test_team_action_drops_none_and_sets_action():
 def test_bare_builders():
     assert endpoints.schema().path == "/schema/fields"
     assert endpoints.account().path == "/account"
-    assert endpoints.list_webhooks().path == "/webhooks"
     assert endpoints.get_teams().path == "/team"

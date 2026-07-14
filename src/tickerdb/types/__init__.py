@@ -25,8 +25,6 @@ from .teams import (
     TeamRole,
     TeamsResponse,
 )
-from .webhooks import WebhookDeliveriesResponse, WebhookDelivery, WebhookEvents
-
 __all__ = [
     # common
     "Timeframe",
@@ -53,10 +51,6 @@ __all__ = [
     # ohlcv
     "OhlcvBar",
     "OhlcvResponse",
-    # webhooks
-    "WebhookEvents",
-    "WebhookDelivery",
-    "WebhookDeliveriesResponse",
     # teams
     "TeamRole",
     "TeamMember",
