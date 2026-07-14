@@ -11,8 +11,7 @@ class BandMeta(TypedDict, total=False):
     """Stability metadata for a band field (Plus/Pro tiers).
 
     Appears as a sibling key with ``_meta`` suffix next to each band value
-    in summary responses when requested and in watchlist responses
-    (e.g. ``rsi_zone_meta``).
+    in summary responses when requested (e.g. ``rsi_zone_meta``).
     """
 
     timeframe: Timeframe

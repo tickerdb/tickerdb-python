@@ -53,15 +53,6 @@ def test_ohlcv_path_and_params():
     }
 
 
-def test_watchlist_mutations_normalize_tickers():
-    add = endpoints.add_to_watchlist([" aapl ", "msft"])
-    assert add.method == "POST"
-    assert add.json == {"tickers": ["AAPL", "MSFT"]}
-
-    remove = endpoints.remove_from_watchlist(["tsla"])
-    assert remove.method == "DELETE"
-    assert remove.json == {"tickers": ["TSLA"]}
-
 
 def test_bare_builders():
     assert endpoints.schema().path == "/schema/fields"

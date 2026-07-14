@@ -9,7 +9,7 @@ Connect your agent to hundreds of indicators like trend_direction, support_level
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
-- Covers the full v1 API: summaries, search, OHLCV, and watchlists
+- Covers the full v1 API: summaries, search, and OHLCV
 
 **Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
@@ -147,42 +147,11 @@ result = client.summary(
 print(result["data"]["stats"])
 ```
 
-### Watchlist
-
-Get the saved watchlist snapshot for the authenticated account.
-
-```python
-result = client.watchlist()
-print(result["data"]["as_of_date"])
-result = client.watchlist(date="2025-01-15")
-```
-
-Add tickers to the saved watchlist:
-
-```python
-result = client.add_to_watchlist(["AAPL", "MSFT", "TSLA"])
-```
-
-Remove tickers from the saved watchlist:
-
-```python
-result = client.remove_from_watchlist(["TSLA"])
-```
-
-### Watchlist Changes
-
-Get field-level state changes for your saved watchlist tickers since the last pipeline run.
-
-```python
-result = client.watchlist_changes()
-result = client.watchlist_changes(timeframe="weekly")
-```
-
 ### Band Stability Metadata
 
 Summary omits sibling `_meta` objects by default so the primary band label stays front-and-center. Set `meta=True` to include full paid-tier stability metadata across the response, or request just the few `*_meta` fields you need via `fields`.
 
-Summary and watchlist responses also include `as_of_date` so you can tell which market session the snapshot represents.
+Summary responses also include `as_of_date` so you can tell which market session the snapshot represents.
 
 ```python
 result = client.summary("AAPL", meta=True)
@@ -200,8 +169,6 @@ from tickerdb import Stability, BandMeta
 ```
 
 `Stability` is one of `"fresh"`, `"holding"`, `"established"`, or `"volatile"`. `BandMeta` contains the full metadata dict. Stability metadata is available on Plus and Pro tiers only.
-
-Stability context also appears in **Watchlist**, which still includes paid-tier `_meta` objects by default, and in **Watchlist Changes**, which include stability fields inline for each changed band.
 
 ### Query Builder
 

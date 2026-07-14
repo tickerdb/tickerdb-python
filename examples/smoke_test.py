@@ -1,8 +1,8 @@
 """Read-only smoke test against the live TickerDB API.
 
 Exercises the main read endpoints with a real API key so you can confirm the
-SDK talks to production correctly. It performs no writes (no webhook/screener/
-team mutations), so it is safe to run against any account.
+SDK talks to production correctly. It performs no writes, so it is safe to
+run against any account.
 
 Usage::
 
@@ -52,9 +52,6 @@ def main() -> int:
             bars = client.ohlcv(ticker, limit=5)["data"].get("bars", [])
             print(f"ohlcv   : {len(bars)} bars, latest close="
                   f"{bars[0]['close'] if bars else 'n/a'}")
-
-            wl = client.watchlist()["data"]
-            print(f"watchlist: as_of={wl.get('as_of_date')}")
         except TickerDBError as e:
             print(f"\nAPI error [{e.status_code}] {e.error_type}: {e.message}")
             return 1

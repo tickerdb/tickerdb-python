@@ -12,11 +12,6 @@ from typing import Any, Dict, List, Optional
 from ._transport import RequestSpec
 
 
-def _normalize_tickers(tickers: List[str]) -> List[str]:
-    """Uppercase and trim ticker symbols for watchlist mutations."""
-    return [str(t).strip().upper() for t in tickers]
-
-
 # ---------------------------------------------------------------------------
 # Summary / search / schema
 # ---------------------------------------------------------------------------
@@ -126,28 +121,4 @@ def ohlcv(
             "limit": limit,
         },
     )
-
-
-# ---------------------------------------------------------------------------
-# Watchlist
-# ---------------------------------------------------------------------------
-
-
-def watchlist(*, date: Optional[str] = None) -> RequestSpec:
-    return RequestSpec("GET", "/watchlist", params={"date": date})
-
-
-def add_to_watchlist(tickers: List[str]) -> RequestSpec:
-    return RequestSpec("POST", "/watchlist", json={"tickers": _normalize_tickers(tickers)})
-
-
-def remove_from_watchlist(tickers: List[str]) -> RequestSpec:
-    return RequestSpec(
-        "DELETE", "/watchlist", json={"tickers": _normalize_tickers(tickers)}
-    )
-
-
-def watchlist_changes(*, timeframe: Optional[str] = None) -> RequestSpec:
-    return RequestSpec("GET", "/watchlist/changes", params={"timeframe": timeframe})
-
 

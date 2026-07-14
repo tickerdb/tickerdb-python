@@ -10,9 +10,7 @@ class AccountLimits(TypedDict, total=False):
 
     monthly_requests: int
     overage_enabled: bool
-    watchlist_limit: int
     search_results: int
-    webhook_urls: int
     history_days: int
 
 

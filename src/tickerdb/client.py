@@ -332,68 +332,6 @@ class TickerDB:
             if not data.get("has_more") or not cursor:
                 break
 
-    def watchlist(
-        self,
-        *,
-        date: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Get the saved watchlist snapshot for the authenticated account.
-
-        Args:
-            date: Optional point-in-time snapshot date (``YYYY-MM-DD``).
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._send(endpoints.watchlist(date=date))
-
-    def add_to_watchlist(
-        self,
-        tickers: List[str],
-    ) -> Dict[str, Any]:
-        """Add ticker symbols to the saved watchlist.
-
-        Args:
-            tickers: List of ticker symbols to save.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._send(endpoints.add_to_watchlist(tickers))
-
-    def remove_from_watchlist(
-        self,
-        tickers: List[str],
-    ) -> Dict[str, Any]:
-        """Remove ticker symbols from the saved watchlist.
-
-        Args:
-            tickers: List of ticker symbols to remove.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._send(endpoints.remove_from_watchlist(tickers))
-
-    def watchlist_changes(
-        self,
-        *,
-        timeframe: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        """Get field-level state changes for your saved watchlist tickers.
-
-        Returns structured diffs showing what changed since the last pipeline
-        run (day-over-day for daily, week-over-week for weekly). Available on
-        all tiers.
-
-        Args:
-            timeframe: ``"daily"`` or ``"weekly"``.
-
-        Returns:
-            Dict with ``data`` and ``rate_limits`` keys.
-        """
-        return self._send(endpoints.watchlist_changes(timeframe=timeframe))
-
     # ------------------------------------------------------------------
     # Context manager support
     # ------------------------------------------------------------------

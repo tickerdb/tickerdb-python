@@ -25,12 +25,6 @@ def test_search_sends_filters(client, recorder):
     assert filters == [{"field": "sector", "op": "eq", "value": "Tech"}]
 
 
-def test_add_to_watchlist_body(client, recorder):
-    client.add_to_watchlist([" aapl ", "msft"])
-    assert json.loads(recorder.last.content) == {"tickers": ["AAPL", "MSFT"]}
-    assert recorder.last.method == "POST"
-
-
 def test_iter_ohlcv_follows_cursor():
     # Two pages: first has_more with a cursor, second ends it.
     pages = [
