@@ -17,29 +17,6 @@ def _normalize_tickers(tickers: List[str]) -> List[str]:
     return [str(t).strip().upper() for t in tickers]
 
 
-def _screener_body(
-    *,
-    filters: Optional[List[Dict[str, Any]]] = None,
-    name: Optional[str] = None,
-    timeframe: Optional[str] = None,
-    sort: Optional[Dict[str, Any]] = None,
-    limit_count: Optional[int] = None,
-) -> Dict[str, Any]:
-    """Build the shared screener create/update body, omitting unset fields."""
-    body: Dict[str, Any] = {}
-    if filters is not None:
-        body["filters"] = filters
-    if name is not None:
-        body["name"] = name
-    if timeframe is not None:
-        body["timeframe"] = timeframe
-    if sort is not None:
-        body["sort"] = sort
-    if limit_count is not None:
-        body["limit_count"] = limit_count
-    return body
-
-
 # ---------------------------------------------------------------------------
 # Summary / search / schema
 # ---------------------------------------------------------------------------
@@ -172,51 +149,6 @@ def remove_from_watchlist(tickers: List[str]) -> RequestSpec:
 
 def watchlist_changes(*, timeframe: Optional[str] = None) -> RequestSpec:
     return RequestSpec("GET", "/watchlist/changes", params={"timeframe": timeframe})
-
-
-# ---------------------------------------------------------------------------
-# Screeners
-# ---------------------------------------------------------------------------
-
-
-def list_screeners() -> RequestSpec:
-    return RequestSpec("GET", "/screeners")
-
-
-def create_screener(
-    *,
-    filters: List[Dict[str, Any]],
-    name: Optional[str] = None,
-    timeframe: Optional[str] = None,
-    sort: Optional[Dict[str, Any]] = None,
-    limit_count: Optional[int] = None,
-) -> RequestSpec:
-    body = _screener_body(
-        filters=filters, name=name, timeframe=timeframe, sort=sort, limit_count=limit_count
-    )
-    return RequestSpec("POST", "/screeners", json=body)
-
-
-def update_screener(
-    id: str,
-    *,
-    filters: Optional[List[Dict[str, Any]]] = None,
-    name: Optional[str] = None,
-    timeframe: Optional[str] = None,
-    sort: Optional[Dict[str, Any]] = None,
-    limit_count: Optional[int] = None,
-) -> RequestSpec:
-    body: Dict[str, Any] = {"id": id}
-    body.update(
-        _screener_body(
-            filters=filters, name=name, timeframe=timeframe, sort=sort, limit_count=limit_count
-        )
-    )
-    return RequestSpec("PUT", "/screeners", json=body)
-
-
-def delete_screener(id: str, *, kind: str = "custom") -> RequestSpec:
-    return RequestSpec("DELETE", "/screeners", json={"id": id, "kind": kind})
 
 
 # ---------------------------------------------------------------------------

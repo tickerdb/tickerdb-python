@@ -63,28 +63,6 @@ def test_watchlist_mutations_normalize_tickers():
     assert remove.json == {"tickers": ["TSLA"]}
 
 
-def test_create_screener_omits_unset_fields():
-    spec = endpoints.create_screener(
-        filters=[{"field": "sector", "op": "eq", "value": "Tech"}], name="X"
-    )
-    assert spec.method == "POST"
-    assert spec.json == {
-        "filters": [{"field": "sector", "op": "eq", "value": "Tech"}],
-        "name": "X",
-    }
-
-
-def test_update_screener_includes_id_and_only_provided_fields():
-    spec = endpoints.update_screener("s1", name="new")
-    assert spec.method == "PUT"
-    assert spec.json == {"id": "s1", "name": "new"}
-
-
-def test_delete_screener_default_kind():
-    spec = endpoints.delete_screener("s1")
-    assert spec.json == {"id": "s1", "kind": "custom"}
-
-
 def test_update_webhook_only_provided_fields():
     spec = endpoints.update_webhook("wh_1", active=False)
     assert spec.json == {"id": "wh_1", "active": False}
@@ -106,6 +84,5 @@ def test_team_action_drops_none_and_sets_action():
 def test_bare_builders():
     assert endpoints.schema().path == "/schema/fields"
     assert endpoints.account().path == "/account"
-    assert endpoints.list_screeners().path == "/screeners"
     assert endpoints.list_webhooks().path == "/webhooks"
     assert endpoints.get_teams().path == "/team"

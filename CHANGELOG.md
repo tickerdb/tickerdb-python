@@ -20,8 +20,6 @@ result shape is unchanged, so upgrading from 0.1.x is drop-in.
 - `ohlcv()` and `iter_ohlcv()` — daily OHLCV bars (split/dividend-adjusted for
   equities, unadjusted for crypto), cursor-paginated and credit-metered;
   `iter_ohlcv()` streams every bar across pages.
-- Screeners: `list_screeners()`, `create_screener()`, `update_screener()`,
-  `delete_screener()`.
 - `webhook_deliveries()` — delivery history (status, retries, HTTP status,
   errors).
 - Team management: `get_teams()`, `create_team()`, `invite_member()`,

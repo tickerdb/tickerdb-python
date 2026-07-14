@@ -9,7 +9,7 @@ Connect your agent to hundreds of indicators like trend_direction, support_level
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
-- Covers the full v1 API: summaries, search, screeners, OHLCV, watchlists, webhooks, and teams
+- Covers the full v1 API: summaries, search, OHLCV, watchlists, webhooks, and teams
 
 **Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
@@ -249,31 +249,6 @@ for bar in client.iter_ohlcv("AAPL", start="2025-01-01"):
 ```
 
 If a request would exceed your credit balance, `InsufficientCreditsError` is raised with `credits_required` and `credits_remaining` attributes.
-
-### Screeners
-
-List, create, update, and delete saved screeners. Built-in "default" screeners and your saved "custom" screeners are returned together.
-
-```python
-result = client.list_screeners()
-print(result["data"]["screeners"])
-
-created = client.create_screener(
-    name="Oversold tech",
-    filters=[
-        {"field": "momentum_rsi_zone", "op": "in", "value": ["deep_oversold", "oversold"]},
-        {"field": "sector", "op": "eq", "value": "Technology"},
-    ],
-    sort={"field": "market_cap", "direction": "desc"},
-)
-screener_id = created["data"]["screener"]["id"]
-
-client.update_screener(screener_id, name="Oversold tech (updated)")
-client.delete_screener(screener_id)                 # delete a custom screener
-client.delete_screener("oversold", kind="default")  # hide a built-in screener
-```
-
-Filters support value operators (`eq`, `neq`, `in`, `gt`, `gte`, `lt`, `lte`, `exists`) and change filters (`{"type": "change", "field": ..., "from": ..., "to": ...}`).
 
 ### Webhooks
 
