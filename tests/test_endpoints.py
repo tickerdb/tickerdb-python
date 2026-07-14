@@ -63,14 +63,6 @@ def test_watchlist_mutations_normalize_tickers():
     assert remove.json == {"tickers": ["TSLA"]}
 
 
-def test_team_action_drops_none_and_sets_action():
-    spec = endpoints.team_action("invite", team_id="t1", email="a@b.com", role=None)
-    assert spec.method == "POST"
-    assert spec.path == "/team"
-    assert spec.json == {"action": "invite", "team_id": "t1", "email": "a@b.com"}
-
-
 def test_bare_builders():
     assert endpoints.schema().path == "/schema/fields"
     assert endpoints.account().path == "/account"
-    assert endpoints.get_teams().path == "/team"

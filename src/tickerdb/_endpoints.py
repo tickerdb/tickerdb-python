@@ -151,17 +151,3 @@ def watchlist_changes(*, timeframe: Optional[str] = None) -> RequestSpec:
     return RequestSpec("GET", "/watchlist/changes", params={"timeframe": timeframe})
 
 
-# ---------------------------------------------------------------------------
-# Teams
-# ---------------------------------------------------------------------------
-
-
-def get_teams() -> RequestSpec:
-    return RequestSpec("GET", "/team")
-
-
-def team_action(action: str, **body: Any) -> RequestSpec:
-    """Build a POST /team action body, dropping ``None`` values."""
-    payload: Dict[str, Any] = {"action": action}
-    payload.update({k: v for k, v in body.items() if v is not None})
-    return RequestSpec("POST", "/team", json=payload)

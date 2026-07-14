@@ -9,7 +9,7 @@ Connect your agent to hundreds of indicators like trend_direction, support_level
 - Full type hints for IDE autocompletion
 - Typed exceptions for every error class
 - Rate limit information on every response
-- Covers the full v1 API: summaries, search, OHLCV, watchlists, and teams
+- Covers the full v1 API: summaries, search, OHLCV, and watchlists
 
 **Full API documentation:** [https://tickerdb.com/docs](https://tickerdb.com/docs)
 
@@ -249,24 +249,6 @@ for bar in client.iter_ohlcv("AAPL", start="2025-01-01"):
 ```
 
 If a request would exceed your credit balance, `InsufficientCreditsError` is raised with `credits_required` and `credits_remaining` attributes.
-
-### Teams
-
-View teams and manage members (most write actions require a business plan and owner/admin role).
-
-```python
-teams = client.get_teams()
-
-team_id = client.create_team("Research")["data"]["team"]["id"]
-client.invite_member(team_id, "analyst@example.com", role="member")
-client.promote_member(team_id, user_id, role="admin")
-client.set_seats(team_id, total_seats=10)
-client.rename_team(team_id, "Research & Strategy")
-
-# Also: remove_member, cancel_invite, resend_invite, leave_team
-```
-
-All team methods are also available on `AsyncTickerDB` with `await`.
 
 ## Error Handling
 

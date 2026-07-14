@@ -43,11 +43,6 @@ from .types import (
     SearchParams,
     SearchResponse,
     Stability,
-    Team,
-    TeamInvite,
-    TeamMember,
-    TeamPendingInvite,
-    TeamsResponse,
 )
 
 __all__ = [
@@ -77,10 +72,5 @@ __all__ = [
     "SearchParams",
     "SearchResponse",
     "Stability",
-    "Team",
-    "TeamInvite",
-    "TeamMember",
-    "TeamPendingInvite",
-    "TeamsResponse",
     "__version__",
 ]

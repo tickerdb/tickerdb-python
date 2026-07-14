@@ -52,16 +52,6 @@ def test_iter_ohlcv_follows_cursor():
     assert seen_cursors == [None, "2025-01-02"]
 
 
-def test_team_invite_dispatches_action(client, recorder):
-    client.invite_member("t1", "a@b.com")
-    assert json.loads(recorder.last.content) == {
-        "action": "invite",
-        "team_id": "t1",
-        "email": "a@b.com",
-        "role": "member",
-    }
-
-
 async def test_async_summary(async_client, recorder):
     result = await async_client.summary("AAPL", timeframe="weekly")
     assert result["data"] == {"ok": True}
